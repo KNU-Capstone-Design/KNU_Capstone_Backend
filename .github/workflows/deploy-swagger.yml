@@ -35,5 +35,5 @@ jobs:
       - name: Commit and Push to docs/
         run: |
           git add docs/
-          git commit -m "Swagger UI 배포 자동화" || echo "No changes to commit"
+          git commit -m "Swagger UI 배포 자동화" 
           git push origin HEAD
