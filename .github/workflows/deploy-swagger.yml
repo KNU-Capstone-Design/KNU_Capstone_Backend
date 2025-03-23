@@ -23,12 +23,16 @@ jobs:
           mkdir docs
           cp -r swagger-ui-master/dist/* docs/
           cp swagger/openapi.yaml docs/openapi.yaml
-          sed -i 's|https://petstore.swagger.io/v2/swagger.json|openapi.yaml|' docs/swagger-initializer.js
+          sed -i.bak 's|https://petstore.swagger.io/v2/swagger.json|openapi.yaml|' docs/swagger-initializer.js
+
+      - name: Configure GitHub credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
 
       - name: Commit & Push to GitHub Pages
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/
-          git commit -m "Swagger UI 자동 배포"
-          git push
+          git commit -m "Swagger UI 자동 배포" || echo "No changes to commit"
+          git push origin HEAD
