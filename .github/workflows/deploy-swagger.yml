@@ -24,7 +24,7 @@ jobs:
           cp -r swagger-ui-master/dist/* docs/
           cp swagger/openapi.yaml docs/openapi.yaml
           sed -i.bak 's|https://petstore.swagger.io/v2/swagger.json|openapi.yaml|' docs/swagger-initializer.js
-
+          touch docs/.nojekyll
       - name: Configure GitHub credentials
         run: |
           git config user.name github-actions[bot]
