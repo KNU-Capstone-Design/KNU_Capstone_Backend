@@ -1,0 +1,34 @@
+name: Deploy Swagger UI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'swagger/openapi.yaml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download Swagger UI
+        run: |
+          curl -L https://github.com/swagger-api/swagger-ui/archive/refs/heads/master.zip -o swagger-ui.zip
+          unzip swagger-ui.zip
+          rm -rf docs
+          mkdir docs
+          cp -r swagger-ui-master/dist/* docs/
+          cp swagger/openapi.yaml docs/openapi.yaml
+          sed -i 's|https://petstore.swagger.io/v2/swagger.json|openapi.yaml|' docs/swagger-initializer.js
+
+      - name: Commit & Push to GitHub Pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git commit -m "Swagger UI 자동 배포"
+          git push
