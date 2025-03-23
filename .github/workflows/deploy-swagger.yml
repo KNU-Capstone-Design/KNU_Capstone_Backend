@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'swagger/openapi.yaml'
 
 jobs:
   build:
@@ -33,5 +35,5 @@ jobs:
       - name: Commit & Push to GitHub Pages
         run: |
           git add docs/
-          git commit -m "🚀 Swagger UI 자동 배포" || echo "✅ 변경 사항 없음"
+          git commit -m "Swagger UI 자동 배포" || echo "변경 사항 없음"
           git push origin HEAD || echo "❌ push 실패"
