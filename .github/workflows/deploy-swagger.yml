@@ -8,14 +8,14 @@ on:
       - 'swagger/openapi.yaml'
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Download Swagger UI
+      - name: Download and Prepare Swagger UI
         run: |
           curl -L https://github.com/swagger-api/swagger-ui/archive/refs/heads/master.zip -o swagger-ui.zip
           unzip swagger-ui.zip
@@ -25,14 +25,15 @@ jobs:
           cp swagger/openapi.yaml docs/openapi.yaml
           sed -i.bak 's|https://petstore.swagger.io/v2/swagger.json|openapi.yaml|' docs/swagger-initializer.js
           touch docs/.nojekyll
+
       - name: Configure GitHub credentials
         run: |
-          git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
 
-      - name: Commit & Push to GitHub Pages
+      - name: Commit and Push to docs/
         run: |
           git add docs/
-          git commit -m "Swagger UI 자동 배포" || echo "No changes to commit"
+          git commit -m "swagger UI 배포 자동화" || echo "No changes to commit"
           git push origin HEAD
