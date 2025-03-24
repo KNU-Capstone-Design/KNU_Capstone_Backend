@@ -1,10 +1,19 @@
 openapi: 3.0.0
 info:
   title: Test API
-  version: 1.0.0
+  version: 1.0.0-oas3
+  
+tags:
+  - name: User
+    description: 회원가입 및 계정정보
+  - name: Temp
+    description: Temp api
+  
 paths:
   /hello:
     get:
+      tags:
+        - User
       summary: Hello API
       responses:
         '200':
