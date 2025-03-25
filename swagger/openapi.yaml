@@ -4,17 +4,46 @@ info:
   version: 1.0.0-oas3
   
 tags:
-  - name: User
-    description: 회원가입 및 계정정보
+  - name: Subscribe
+    description: 이메일 등록
   - name: Temp
-    description: Temp api
+    description: Temp api  
   
 paths:
-  /hello:
-    get:
+  /api/subscribe:
+    post:
       tags:
-        - User
-      summary: Hello API
+      - Subscribe
+      summary: 사용자 이메일 등록
+      description: 이메일 주소를 통해 서비스 가입
+      parameters:
+        - name: email
+          in: query
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
       responses:
-        '200':
-          description: successful response
+        '201':
+          description: 성공적으로 생성됨
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "이메일이 성공적으로 등록되었습니다.등록하신 이메일을 확인해주세요."
+                  email:
+                    type: string
+                    example: user@example.com
+                  
