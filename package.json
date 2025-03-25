@@ -1,0 +1,23 @@
+{
+  "name": "knu_capstone_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kimsunho2000/KNU_Capstone_Backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kimsunho2000/KNU_Capstone_Backend/issues"
+  },
+  "homepage": "https://github.com/kimsunho2000/KNU_Capstone_Backend#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
