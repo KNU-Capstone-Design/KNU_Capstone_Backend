@@ -254,3 +254,68 @@ paths:
       responses:
         '200':
           description: 이메일 전송 성공
+        '500':
+          description: 서버 오류
+
+
+
+  /api/auth/token:
+    post:
+      summary: 이메일 기반 임시 토큰 요청
+      description: 등록된 이메일 주소로 질문을 받았을 때, 사용자가 '답변하기' 버튼을 클릭하면 호출되는 API로 해당 이메일에 대한 임시 토큰을 생성하여 이후 인증에 사용됨.
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: temp@temp.com
+      responses:
+        '200':
+          description: 토큰 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: a9f4b3c1d22e1cfa8b9
+                  message:
+                    type: string
+                    example: "임시 토큰이 발급되었습니다."
+        '400':
+          description: 이메일 누락
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "이메일이 누락되었습니다."
+        '500':
+          description: 서버 에러
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Server error"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
