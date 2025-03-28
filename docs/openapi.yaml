@@ -1,78 +1,27 @@
 openapi: 3.0.0
 info:
-  title: Test API
-  version: 1.0.0-oas3
-  
+  title: RESTful Subscribe API
+  version: 1.0.1
+  description: 완전한 RESTful 원칙에 기반한 이메일 구독 등록, 해지 및 문제/답변/체점 API입니다.
+
 tags:
   - name: Subscribe
-    description: 이메일 등록
-  - name: Auth
-    description: 인증
-  
+    description: 이메일 구독 등록 및 해지
+  - name: Questions
+    description: 문제 발송
+  - name: Answers
+    description: 사용자 답변 제출 및 이력 조회
+  - name: Grades
+    description: AI 채점 및 결과 메일 발송
+
 paths:
-  /api/subscribe:
+
+  /api/subscribers:
     post:
       tags:
-      - Subscribe
-      summary: 사용자 이메일 등록
-      description: 이메일 주소를 통해 서비스 가입
-      parameters:
-        - name: email
-          in: query
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                  example: user@example.com
-      responses:
-        '201':
-          description: 성공적으로 이메일 등록 완료
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "이메일이 성공적으로 등록되었습니다.등록하신 이메일을 확인해주세요."
-                  email:
-                    type: string
-                    example: user@example.com
-        '409':
-          description: 이미 등록된 이메일일 경우
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "이미 구독중인 이메일 입니다."
-        '500':
-          description: "서버 에러"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Server error"
-#--------------------------------------------------------------------------------------#
-  /api/auth/token:
-    post:
-      summary: 이메일 기반 임시 토큰 요청
-      description: 등록된 이메일 주소로 질문을 받았을 때, 사용자가 '답변하기' 버튼을 클릭하면 호출되는 API로 해당 이메일에 대한 임시 토큰을 생성하여 이후 인증에 사용됨.
-      tags:
-        - Auth
+        - Subscribe
+      summary: 구독 등록
+      description: 사용자 이메일을 받아 새로운 구독자를 생성합니다.
       requestBody:
         required: true
         content:
@@ -85,39 +34,223 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: temp@temp.com
+                  example: user@example.com
       responses:
-        200:
-          description: 토큰 생성 성공
+        '201':
+          description: 구독 등록 완료
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  token:
-                    type: string
-                    example: a9f4b3c1d22e1cfa8b9
                   message:
                     type: string
-                    example: "임시 토큰이 발급되었습니다."
-        400:
-          description: "이메일 누락"
+                    example: 이메일이 성공적으로 등록되었습니다.
+                  email:
+                    type: string
+                    example: user@example.com
+        '409':
+          description: 이미 등록된 이메일
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   error:
-                    type: String
-                    example: "이메일이 누락되었습니다."
+                    type: string
+                    example: 이미 구독 중인 이메일입니다.
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 서버 오류
 
-        500:
-          description: "서버 에러"
+  /api/subscribers/{email}:
+    delete:
+      tags:
+        - Subscribe
+      summary: 구독 해지
+      description: 이메일 주소를 경로 파라미터로 받아 구독을 해지합니다.
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+            format: email
+            example: user@example.com
+      responses:
+        '200':
+          description: 구독 해지 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 이메일 구독이 성공적으로 해지되었습니다.
+                  email:
+                    type: string
+                    example: user@example.com
+        '404':
+          description: 등록된 이메일이 없을 경우
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   error:
-                    type: String
-                    example: "Server error"
+                    type: string
+                    example: 해당 이메일은 구독되어 있지 않습니다.
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 서버 오류
+
+  /api/questions:
+    post:
+      tags:
+        - Questions
+      summary: 문제 발송
+      description: 등록된 모든 구독자에게 문제 메일을 발송합니다.
+      responses:
+        '200':
+          description: 문제 메일 발송 완료
+        '500':
+          description: 서버 오류
+
+  /api/answers:
+    post:
+      tags:
+        - Answers
+      summary: 사용자 답변 제출
+      description: 사용자가 받은 문제에 대한 답변을 제출합니다. 토큰 인증 필요.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - questionId
+                - answer
+              properties:
+                questionId:
+                  type: string
+                  example: q001
+                answer:
+                  type: string
+                  example: "function solution() { return true; }"
+      responses:
+        '200':
+          description: 답변 제출 완료
+        '401':
+          description: 인증 오류
+        '500':
+          description: 서버 오류
+
+    get:
+      tags:
+        - Answers
+      summary: 사용자 문제 풀이 결과 조회
+      description: 사용자가 제출한 답변 이력을 조회합니다. 토큰으로 판별되며, 별도의 쿼리는 필요하지 않습니다.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 문제 풀이 결과 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    questionId:
+                      type: string
+                    answer:
+                      type: string
+                    score:
+                      type: number
+                    feedback:
+                      type: string
+        '401':
+          description: 인증 오류
+        '500':
+          description: 서버 오류
+
+  /api/grades:
+    post:
+      tags:
+        - Grades
+      summary: AI 채점 요청
+      description: 사용자의 답변을 Groq API를 통해 채점합니다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - questionId
+                - answer
+              properties:
+                questionId:
+                  type: string
+                answer:
+                  type: string
+      responses:
+        '200':
+          description: AI 채점 결과 반환
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  score:
+                    type: number
+                  feedback:
+                    type: string
+        '500':
+          description: 서버 오류
+
+  /api/grades/notify:
+    post:
+      tags:
+        - Grades
+      summary: 체점 결과 이메일 발송
+      description: AI 채점 결과를 사용자에게 이메일로 발송합니다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - score
+                - feedback
+              properties:
+                email:
+                  type: string
+                score:
+                  type: number
+                feedback:
+                  type: string
+      responses:
+        '200':
+          description: 이메일 전송 성공
