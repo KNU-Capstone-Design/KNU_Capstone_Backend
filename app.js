@@ -2,10 +2,15 @@
 import express from 'express'
 import connectDB from './src/config/mongoose.js'
 import subscribeRoutes from './src/routes/subscribeRoutes.js'
-import authRoutes from "./src/routes/authRoutes.js";
+import authRoutes from "./src/routes/authRoutes.js"
+import dotenv from 'dotenv'
 
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || 'localhost';
+
+
+dotenv.config();
 
 // json파싱을 위한 미들웨어 추가
 app.use(express.json());
@@ -22,6 +27,6 @@ app.use('/api/auth', authRoutes);
 connectDB();
 
 // 서버 실행
-app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+app.listen(PORT, HOST, () => {
+    console.log('Server running at http://${HOST}:${PORT}');
 });
