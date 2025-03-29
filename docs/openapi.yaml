@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: RESTful Subscribe API
+  title: Capstone
   version: 1.0.1
   description: 완전한 RESTful 원칙에 기반한 이메일 구독 등록, 해지 및 문제/답변/체점 API입니다.
 
@@ -128,8 +128,24 @@ paths:
       responses:
         '200':
           description: 문제 메일 발송 완료
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 메일 발송 완료.
         '500':
           description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 서버 오류
 
   /api/answers:
     post:
@@ -158,10 +174,34 @@ paths:
       responses:
         '200':
           description: 답변 제출 완료
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 답변 제출 완료
         '401':
           description: 인증 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 인증 오류
         '500':
           description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 서버 오류
 
     get:
       tags:
@@ -190,15 +230,31 @@ paths:
                       type: string
         '401':
           description: 인증 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 인증 오류
         '500':
           description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 서버 오류
 
   /api/grades:
     post:
       tags:
         - Grades
       summary: AI 채점 요청
-      description: 사용자의 답변을 Groq API를 통해 채점합니다.
+      description: 사용자의 답변을 Groq API를 통해 채점하며, 점수와 함께 잘한 점, 개선할 점, 틀린 점을 항목별로 제공합니다.
       requestBody:
         required: true
         content:
@@ -211,8 +267,10 @@ paths:
               properties:
                 questionId:
                   type: string
+                  example: Network-q001
                 answer:
                   type: string
+                  example: OSI 7계층은 통신 과정을 7단계로 나눈 개념입니다. 각각은 물리, 데이터링크, 네트워크, 전송, 세션, 표현, 응용 계층으로 구성됩니다.
       responses:
         '200':
           description: AI 채점 결과 반환
@@ -223,46 +281,34 @@ paths:
                 properties:
                   score:
                     type: number
+                    example: 78
                   feedback:
+                    type: object
+                    properties:
+                      wellDone:
+                        type: string
+                        example: "OSI 7계층의 구성 계층을 정확히 나열하였습니다."
+                      improve:
+                        type: string
+                        example: "각 계층의 역할에 대한 간단한 설명이 있었다면 더 완성도 있는 답변이 되었을 것입니다."
+                      mistake:
+                        type: string
+                        example: "없음"
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
                     type: string
-        '500':
-          description: 서버 오류
-
-  /api/grades/notify:
-    post:
-      tags:
-        - Grades
-      summary: 체점 결과 이메일 발송
-      description: AI 채점 결과를 사용자에게 이메일로 발송합니다.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-                - score
-                - feedback
-              properties:
-                email:
-                  type: string
-                score:
-                  type: number
-                feedback:
-                  type: string
-      responses:
-        '200':
-          description: 이메일 전송 성공
-        '500':
-          description: 서버 오류
-
-
+                    example: 서버 오류
 
   /api/auth/token:
     post:
       summary: 이메일 기반 임시 토큰 요청
-      description: 등록된 이메일 주소로 질문을 받았을 때, 사용자가 '답변하기' 버튼을 클릭하면 호출되는 API로 해당 이메일에 대한 임시 토큰을 생성하여 이후 인증에 사용됨.
+      description: 등록된 이메일 주소로 질문을 받았을 때, 사용자가 '답변하기' 버튼, '오답노트 보기' 버튼,  을 클릭하면 호출되는 API로 해당 이메일에 대한 임시 토큰을 생성하여 이후 인증에 사용됨.
       tags:
         - Auth
       requestBody:
@@ -291,7 +337,7 @@ paths:
                     example: a9f4b3c1d22e1cfa8b9
                   message:
                     type: string
-                    example: "임시 토큰이 발급되었습니다."
+                    example: 임시 토큰이 발급되었습니다.
         '400':
           description: 이메일 누락
           content:
@@ -301,7 +347,7 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "이메일이 누락되었습니다."
+                    example: 이메일이 누락되었습니다.
         '500':
           description: 서버 에러
           content:
@@ -311,11 +357,11 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Server error"
+                    example: 서버 오류
 
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT
+      bearerFormat: Token
