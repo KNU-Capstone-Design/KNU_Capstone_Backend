@@ -1,18 +1,36 @@
-name: Deploy Code
+name: Deploy Code and Swagger
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'swagger/openapi.yaml'  # Swagger 파일 수정 시
-      - 'src/**'  # 메인 코드 파일 수정 시
+      - 'swagger/openapi.yaml'
+      - 'src/**'
       - 'docker-compose.yml'
       - 'Dockerfile'
 
 jobs:
+  check-scope:
+    runs-on: ubuntu-latest
+    outputs:
+      is_swagger: ${{ steps.check.outputs.swagger }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check if Swagger file was changed
+        id: check
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q 'swagger/openapi.yaml'; then
+            echo "swagger=true" >> $GITHUB_OUTPUT
+          else
+            echo "swagger=false" >> $GITHUB_OUTPUT
+          fi
+
   deploy-swagger:
-    if: contains(github.event.head_commit.message, 'swagger')  # Swagger 파일 수정일 때만 실행
+    needs: check-scope
+    if: needs.check-scope.outputs.is_swagger == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -39,8 +57,8 @@ jobs:
           git push origin HEAD || echo "❌ push 실패"
 
   deploy-code:
-    if: !contains(github.event.head_commit.message, 'swagger')  # Swagger 외 코드 수정 시 실행
-    needs: deploy-swagger  # Swagger UI 배포 후 코드 배포
+    needs: check-scope
+    if: needs.check-scope.outputs.is_swagger != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -53,8 +71,7 @@ jobs:
           username: ${{ secrets.AZURE_USER }}
           password: ${{ secrets.AZURE_SSH_PASSWORD }}
           script: |
-            # SSH로 VM에 접속하여 배포 작업 수행
-            cd ~/your-repo
-            git pull --rebase origin main  # 최신 코드 가져오기
-            docker-compose down           # 기존 컨테이너 중지
-            docker-compose up -d --build  # 새로운 컨테이너 빌드 및 실행
+            cd ~/KNU_Capstone_Backend
+            git pull origin main
+            docker-compose down
+            docker-compose up -d --build
