@@ -5,10 +5,13 @@ on:
     branches:
       - main
     paths:
-      - 'swagger/openapi.yaml'
       - 'src/**'
+      - 'swagger/openapi.yaml'
       - 'docker-compose.yml'
       - 'Dockerfile'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'app.js'
 
 jobs:
   check-scope:

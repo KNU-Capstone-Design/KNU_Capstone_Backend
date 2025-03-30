@@ -22,7 +22,7 @@ const CategorySchema = new Schema({
         type: String,
         required: true
     },
-    // 카테고리 스키마에 Question 스키마를 포함시킴
+    // 카테고리 스키마는 질문 스키마를 포함
     questions: [QuestionSchema]
 });
 
