@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+// 유저 스키마
 const userSchema = new mongoose.Schema({
     // 사용자의 이메일
     email: { type: String, required: true, unique: true },
