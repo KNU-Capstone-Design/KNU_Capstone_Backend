@@ -9,5 +9,8 @@ const tempAuthSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// 토큰 만료후 자동으로 문서 삭제
+tempAuthSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
 const TempAuth = mongoose.model('TempAuth', tempAuthSchema);
 export default TempAuth;

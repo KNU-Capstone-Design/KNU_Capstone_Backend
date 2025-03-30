@@ -139,7 +139,7 @@ paths:
         '500':
           description: 서버 오류
           content:
-            application/json:
+            application/jso2n:
               schema:
                 type: object
                 properties:
@@ -152,7 +152,7 @@ paths:
       tags:
         - Answers
       summary: 사용자 답변 제출
-      description: 사용자가 받은 문제에 대한 답변을 제출합니다. 토큰 인증 필요.
+      description: 사용자가 받은 문제에 대한 답변을 제출합니다. 답변은 500자 이내로 받아야하고 토큰 인증 또한 필요.
       security:
         - bearerAuth: []
       requestBody:
