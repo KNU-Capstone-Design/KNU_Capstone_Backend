@@ -69,7 +69,7 @@ jobs:
         with:
           host: ${{ secrets.AZURE_VM_IP }}
           username: ${{ secrets.AZURE_USER }}
-          password: ${{ secrets.AZURE_SSH_PASSWORD }}
+          key: ${{ secrets.AZURE_SSH_KEY }}
           script: |
             cd ~/KNU_Capstone_Backend
             git pull origin main
