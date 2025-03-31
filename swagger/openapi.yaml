@@ -71,11 +71,11 @@ paths:
                     example: 서버 오류
 
   /api/subscribers/{email}:
-    delete:
+    patch:
       tags:
         - Subscribe
       summary: 구독 해지
-      description: 이메일 주소를 경로 파라미터로 받아 구독을 해지합니다.
+      description: 이메일 주소를 경로 파라미터로 받아 구독을 해지합니다.(DB에서 이메일 삭제 x)
       parameters:
         - name: email
           in: path
@@ -86,7 +86,7 @@ paths:
             example: user@example.com
       responses:
         '200':
-          description: 구독 해지 성공
+          description: 구독 해지 처리 결과
           content:
             application/json:
               schema:
@@ -94,10 +94,20 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: 이메일 구독이 성공적으로 해지되었습니다.
                   email:
                     type: string
-                    example: user@example.com
+              examples:
+                success:
+                  summary: 정상적으로 구독이 해지된 경우
+                  value:
+                    message: 이메일 구독이 성공적으로 해지되었습니다.
+                    email: user@example.com
+                already_unsubscribed:
+                  summary: 이미 구독이 해지된 경우
+                  value:
+                    message: 해당 이메일은 이미 구독 해지된 상태입니다.
+                    email: user@example.com
+
         '404':
           description: 등록된 이메일이 없을 경우
           content:

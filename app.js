@@ -28,5 +28,5 @@ connectDB();
 
 // 서버 실행
 app.listen(PORT, HOST, () => {
-    console.log('Server running at http://${HOST}:${PORT}');
+    console.log(`Server running at http://${HOST}:${PORT}`);
 });
