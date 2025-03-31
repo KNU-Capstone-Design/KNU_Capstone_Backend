@@ -21,19 +21,36 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Check if Swagger file was changed
+      - name: Check if Swagger file was changed #fallback 방식을 통해 2중으로 openapi.yaml 파읿 변경 감지
         id: check
         run: |
-          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q 'swagger/openapi.yaml'; then
+          echo "변경된 파일 목록 감지 시작"
+          
+          echo "git diff로 변경된 파일 확인"
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changed.txt 2>/dev/null; then
+            echo "git diff 성공"
+          else
+            echo "⚠git diff 실패 → git log -1로 fallback"
+            git log -1 --name-only --pretty=format: > changed.txt
+          fi
+          
+          echo "변경된 파일 목록:"
+          cat changed.txt
+          
+          if grep -q '^swagger/openapi.yaml$' changed.txt; then
+            echo "Swagger 파일 변경 감지됨"
             echo "swagger=true" >> $GITHUB_OUTPUT
           else
+            echo "Swagger 파일 변경 없음"
             echo "swagger=false" >> $GITHUB_OUTPUT
           fi
 
   deploy-swagger:
     needs: check-scope
-    #if: needs.check-scope.outputs.is_swagger == 'true'
+    if: needs.check-scope.outputs.is_swagger == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

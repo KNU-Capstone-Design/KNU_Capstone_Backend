@@ -21,7 +21,7 @@ paths:
       tags:
         - Subscribe
       summary: 구독 등록
-      description: 사용자 이메일을 받아 새로운 구독자를 생성합니다.
+      description: 사용자 이메일을 받아 새로운 구독자를 생성.
       requestBody:
         required: true
         content:
