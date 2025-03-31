@@ -67,19 +67,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Debug ssh key
-        run: |
-          if [ -z "${{ secrets.AZURE_SSH_KEY }}" ]; then
-            echo "SSH 키가 비어 있습니다"
-          else
-            echo "SSH 키가 설정되어 있습니다."
-            echo "SSH 키 길이: $(echo '${{ secrets.AZURE_SSH_KEY }}' | wc -c) bytes"
-          fi
-
-      - name: Debug SSH username
-        run: |
-          echo "SSH 유저명은: ${{ secrets.AZURE_USER }}"
-
       - name: SSH into Azure VM and deploy code
         uses: appleboy/ssh-action@v0.1.3
         with:
