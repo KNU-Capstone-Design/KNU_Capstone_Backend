@@ -33,7 +33,7 @@ jobs:
 
   deploy-swagger:
     needs: check-scope
-    if: needs.check-scope.outputs.is_swagger == 'true'
+    #if: needs.check-scope.outputs.is_swagger == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

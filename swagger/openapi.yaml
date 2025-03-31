@@ -134,7 +134,7 @@ paths:
       tags:
         - Questions
       summary: 문제 발송
-      description: 등록된 모든 구독자에게 문제 메일을 발송합니다.
+      description: 등록된 모든 구독자에게 문제 메일을 발송.
       responses:
         '200':
           description: 문제 메일 발송 완료
