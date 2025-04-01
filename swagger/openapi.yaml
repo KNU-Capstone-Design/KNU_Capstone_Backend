@@ -11,17 +11,16 @@ tags:
     description: 문제 발송
   - name: Answers
     description: 사용자 답변 제출 및 이력 조회
-  - name: Grades
-    description: AI 채점 및 결과 메일 발송
+  - name: Auth
+    description: 이메일 기반 인증 처리
 
 paths:
-
   /api/subscribers:
     post:
       tags:
         - Subscribe
       summary: 구독 등록
-      description: 사용자 이메일을 받아 새로운 구독자를 생성.
+      description: 사용자 이메일을 통해 새로운 구독자를 생성, 구독자가 선택한 카테고리들도 DB에 함께 저장.
       requestBody:
         required: true
         content:
@@ -35,6 +34,10 @@ paths:
                   type: string
                   format: email
                   example: user@example.com
+                category:
+                  type: string
+                  format: string
+                  example: database,network,backend
       responses:
         '201':
           description: 구독 등록 완료
@@ -75,7 +78,7 @@ paths:
       tags:
         - Subscribe
       summary: 구독 해지
-      description: 이메일 주소를 경로 파라미터로 받아 구독을 해지합니다.(DB에서 이메일 삭제 x)
+      description: 이메일 주소를 경로 파라미터로 받아 구독을 해지합니다. (DB에서 이메일 삭제하지 않음)
       parameters:
         - name: email
           in: path
@@ -107,7 +110,6 @@ paths:
                   value:
                     message: 해당 이메일은 이미 구독 해지된 상태입니다.
                     email: user@example.com
-
         '404':
           description: 등록된 이메일이 없을 경우
           content:
@@ -149,7 +151,7 @@ paths:
         '500':
           description: 서버 오류
           content:
-            application/jso2n:
+            application/json:
               schema:
                 type: object
                 properties:
@@ -162,7 +164,7 @@ paths:
       tags:
         - Answers
       summary: 사용자 답변 제출
-      description: 사용자가 받은 문제에 대한 답변을 제출합니다. 답변은 500자 이내로 받아야하고 토큰 인증 또한 필요.
+      description: 사용자가 받은 문제에 대한 답변을 제출합니다. 답변은 500자 이내로 받아야 하며 토큰 인증이 필요합니다.
       security:
         - bearerAuth: []
       requestBody:
@@ -259,12 +261,14 @@ paths:
                     type: string
                     example: 서버 오류
 
-  /api/grades:
+  /api/answers/reveal:
     post:
       tags:
-        - Grades
-      summary: AI 채점 요청
-      description: 사용자의 답변을 Groq API를 통해 채점하며, 점수와 함께 잘한 점, 개선할 점, 틀린 점을 항목별로 제공합니다.
+        - Answers
+      summary: AI 기반 정답 요청 (모르겠어요 버튼)
+      description: 사용자가 문제에 대한 정답을 모르겠을 때 Groq API를 통해 정답을 요청합니다. 인증이 필요합니다.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -273,14 +277,70 @@ paths:
               type: object
               required:
                 - questionId
-                - answer
               properties:
                 questionId:
                   type: string
-                  example: Network-q001
-                answer:
-                  type: string
-                  example: OSI 7계층은 통신 과정을 7단계로 나눈 개념입니다. 각각은 물리, 데이터링크, 네트워크, 전송, 세션, 표현, 응용 계층으로 구성됩니다.
+                  example: q001
+      responses:
+        '200':
+          description: 정답 제공 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questionId:
+                    type: string
+                    example: q001
+                  answer:
+                    type: string
+                    example: "function solution() { return true; }"
+        '401':
+          description: 인증 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 인증 오류
+        '404':
+          description: 질문을 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 질문을 찾을 수 없습니다.
+        '500':
+          description: 정답 생성 실패 (Grok API 오류 등)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 정답 생성 중 오류가 발생했습니다.
+
+  /api/answers/{answerId}/grade:
+    post:
+      tags:
+        - Answers
+      summary: 특정 답변에 대한 AI 채점 요청
+      description: 사용자가 제출한 특정 답변에 대해 Grok API를 통해 AI 채점을 수행합니다. 채점 결과는 점수와 피드백으로 구성되며, 이후 오답노트에 활용됩니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: answerId
+          required: true
+          schema:
+            type: string
+          description: 채점을 요청할 답변의 고유 ID
       responses:
         '200':
           description: AI 채점 결과 반환
@@ -303,9 +363,9 @@ paths:
                         example: "각 계층의 역할에 대한 간단한 설명이 있었다면 더 완성도 있는 답변이 되었을 것입니다."
                       mistake:
                         type: string
-                        example: "없음"
-        '500':
-          description: 서버 오류
+                        example: "계층 간 관계 설명이 누락되었습니다."
+        '401':
+          description: 인증 오류
           content:
             application/json:
               schema:
@@ -313,12 +373,32 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: 서버 오류
+                    example: 인증 오류
+        '404':
+          description: 답변을 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 해당 답변을 찾을 수 없습니다.
+        '500':
+          description: 서버 오류 또는 Grok API 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: AI 채점 처리 중 오류가 발생했습니다.
 
   /api/auth/token:
     post:
       summary: 이메일 기반 임시 토큰 요청
-      description: 등록된 이메일 주소로 질문을 받았을 때, 사용자가 '답변하기' 버튼, '오답노트 보기' 버튼,  을 클릭하면 호출되는 API로 해당 이메일에 대한 임시 토큰을 생성하여 이후 인증에 사용됨.
+      description: 등록된 이메일 주소로 질문을 받았을 때, 사용자가 '답변하기' 또는 '오답노트 보기' 버튼을 클릭하면 호출되는 API로, 해당 이메일에 대한 임시 토큰을 생성하여 인증에 사용됩니다.
       tags:
         - Auth
       requestBody:
