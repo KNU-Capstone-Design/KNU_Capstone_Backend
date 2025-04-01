@@ -77,8 +77,8 @@ jobs:
           git push origin HEAD || echo "❌ push 실패"
 
   deploy-code:
-    needs: check-scope
-    if: needs.check-scope.outputs.is_swagger != 'true'
+    needs: [check-scope, deploy-swagger]
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
