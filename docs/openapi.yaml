@@ -395,6 +395,84 @@ paths:
                     type: string
                     example: AI 채점 처리 중 오류가 발생했습니다.
 
+  /api/answers/{questionId}/retry:
+    post:
+      tags:
+        - Answers
+      summary: 문제 다시 풀기
+      description: 사용자가 이전에 푼 문제를 다시 선택하여 풀 수 있도록 기존 기록 위에 덮어씁니다. 토큰 인증이 필요합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 다시 풀 문제의 ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                answer:
+                  type: string
+                  example: "function solution() { return true; }"
+      responses:
+        '200':
+          description: 답변이 업데이트되었습니다.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 답변이 갱신되었습니다.
+                  questionId:
+                    type: string
+                    example: q001
+                  newAnswer:
+                    type: string
+                    example: "function solution() { return true; }"
+        '404':
+          description: 기존 문제 기록 없음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 해당 문제의 기존 답변이 존재하지 않습니다.
+        '401':
+          description: 인증 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 인증 오류
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 서버 오류.
+
+
+
+
+
+
   /api/auth/token:
     post:
       summary: 이메일 기반 임시 토큰 요청
