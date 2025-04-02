@@ -1,0 +1,18 @@
+name: Push Notify
+# 메인 브랜치에 이벤트(Push,Merge)가 발생했을때 슬랙에 알림 발송
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send webhook with commit message
+        run: |
+          curl -X POST ${{ secrets.WEB_HOOK_URL }} \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": "📢 `${{ github.actor }}`가 main 브랜치에 푸시했습니다!\n📝 커밋 메시지: `${{ github.event.head_commit.message }}`"
+            }'
