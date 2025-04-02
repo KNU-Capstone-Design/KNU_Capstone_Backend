@@ -6,7 +6,7 @@ const router = express.Router();
 // POST /api/subscribe 요청시 라우팅
 router.post('/', subscribeUser);
 
-// PATH /api/subscribe 요청시 라우팅
+// PATCH /api/subscribe 요청시 라우팅
 router.patch('/', unsubscribe);
 
 export default router;

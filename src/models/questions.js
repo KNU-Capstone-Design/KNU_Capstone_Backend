@@ -17,7 +17,7 @@ const QuestionSchema = new Schema({
 
 // 카테고리 스키마
 const CategorySchema = new Schema({
-    // 카테고리 이름 (데이터베이스, 운영체제..)
+    // 카테고리 이름 (Database, OS..)
     category: {
         type: String,
         required: true
