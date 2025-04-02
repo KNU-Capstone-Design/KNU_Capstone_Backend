@@ -37,7 +37,7 @@ paths:
                 category:
                   type: array
                   format: array
-                  example: ["Network", "OS"]
+                  example: ["Network", "OS", "Backend"]
       responses:
         '201':
           description: 구독 등록 완료
