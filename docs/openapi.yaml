@@ -35,9 +35,9 @@ paths:
                   format: email
                   example: user@example.com
                 category:
-                  type: string
-                  format: string
-                  example: database,network,backend
+                  type: array
+                  format: array
+                  example: ["Network", "OS"]
       responses:
         '201':
           description: 구독 등록 완료
