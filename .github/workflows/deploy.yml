@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if Swagger file was changed #fallback 방식을 통해 2중으로 openapi.yaml 파읿 변경 감지
+      - name: Check if Swagger file was changed #fallback 방식을 통해 2중으로 openapi.yaml 파일 변경 감지
         id: check
         run: |
           echo "변경된 파일 목록 감지 시작"
@@ -75,6 +75,15 @@ jobs:
           git add docs/
           git commit -m "Swagger UI 자동 배포" || echo "변경 사항 없음"
           git push origin HEAD || echo "❌ push 실패"
+
+      - name: Notify Frontend (Slack Webhook)
+        run: |
+          curl -X POST ${{ secrets.FRONTEND_WEBHOOK_URL }} \
+            -H "Content-Type: application/json" \
+            -d '{
+            "text": "📘 Swagger 문서가 업데이트되었습니다!\n🔗 https://kimsunho2000.github.io/KNU_Capstone_Backend/>"
+          }'
+      
 
   deploy-code:
     needs: [check-scope, deploy-swagger]
