@@ -20,7 +20,7 @@ paths:
       tags:
         - Subscribe
       summary: 구독 등록
-      description: 사용자 이메일을 통해 새로운 구독자를 생성, 구독자가 선택한 카테고리들도 DB에 함께 저장.
+      description: 사용자 이메일을 통해 새로운 구독자를 생성, 구독자가 선택한 카테고리들도 DB에 함께 저장. 카테고리는 문자열 배열 타입으로 전송
       requestBody:
         required: true
         content:
