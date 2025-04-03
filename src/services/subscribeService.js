@@ -8,6 +8,19 @@ import User from '../models/users.js'
     @returns { Promise<Object> } => DB에 저장되는 문서
  */
 export const subscribe = async (email, categories, subscriptionStatus) => {
+    // 재구독 유저 확인
+    const existingUser = await User.findOne({ email });
+
+    // 이미 존재하지만 구독 해지 상태인 경우 → 재활성화
+    if (existingUser) {
+        if (existingUser.subscriptionStatus === false) {
+            existingUser.subscriptionStatus = true;
+            existingUser.categories = categories;
+            return await existingUser.save();
+        }
+        // 이미 구독 중인 경우
+        throw new Error('ALREADY_SUBSCRIBED');
+    }
     // 새로운 User객체를 생성
     const newUser = new User ({
         email,categories,subscriptionStatus
@@ -16,14 +29,12 @@ export const subscribe = async (email, categories, subscriptionStatus) => {
     return await newUser.save();
 };
 
-// DB에서 이메일 중복 여부 확인하는 비즈니스 로직
-export const isAlreadySubscribed = async (email) => {
-    console.log("이메일 중복 확인:", email);
-};
-
 // DB에서 해당 이메일의 구독 해지 상태로 바꾸는 비지니스 로직
 export const unsubscribe = async (email) => {
-    console.log("구독 해지", email);
+   return User.findOneAndUpdate(
+        { email },
+        { subscriptionStatus: false }
+    );
 };
 
 // DB에 해당 이메일이 존재하는지 확인

@@ -2,7 +2,7 @@ import axios from 'axios'
 import dotenv from 'dotenv'
 
 dotenv.config();
-//임시 작성, 나중에 모델이 확정되면 API키 작성 예정.
+//임시 작성
 async function getFeedbackFromGroq(userAnswer) {
     const response = await axios.post(
         'https://api.groq.com/openai/v1/chat/completions',
