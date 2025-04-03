@@ -72,21 +72,24 @@ paths:
                   error:
                     type: string
                     example: 서버 오류
-
-  /api/subscribers/{email}:
     patch:
       tags:
         - Subscribe
       summary: 구독 해지
       description: 이메일 주소를 경로 파라미터로 받아 구독을 해지합니다. (DB에서 이메일 삭제하지 않음)
-      parameters:
-        - name: email
-          in: path
-          required: true
-          schema:
-            type: string
-            format: email
-            example: user@example.com
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
       responses:
         '200':
           description: 구독 해지 처리 결과
