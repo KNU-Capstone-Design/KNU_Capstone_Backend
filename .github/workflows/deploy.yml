@@ -81,7 +81,7 @@ jobs:
           curl -X POST ${{ secrets.FRONTEND_WEB_HOOK_URL }} \
             -H "Content-Type: application/json" \
             -d '{
-            "text": "📘 Swagger 문서가 업데이트되었습니다!\n🔗 https://kimsunho2000.github.io/KNU_Capstone_Backend/>"
+            "text": "📘 Swagger 문서가 업데이트되었습니다!\n🔗 https://knu-capstone-design.github.io/KNU_Capstone_Backend/>"
           }'
       
 
