@@ -76,7 +76,7 @@ paths:
       tags:
         - Subscribe
       summary: 구독 해지
-      description: 이메일 주소를 경로 파라미터로 받아 구독을 해지합니다. (DB에서 이메일 삭제하지 않음)
+      description: 이메일 주소를 받아 구독을 해지합니다. (DB에서 이메일 삭제하지 않음)
       requestBody:
         required: true
         content:

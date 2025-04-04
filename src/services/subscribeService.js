@@ -31,18 +31,23 @@ export const subscribe = async (email, categories, subscriptionStatus) => {
 
 // DB에서 해당 이메일의 구독 해지 상태로 바꾸는 비지니스 로직
 export const unsubscribe = async (email) => {
-   return User.findOneAndUpdate(
-        { email },
-        { subscriptionStatus: false }
-    );
-};
 
-// DB에 해당 이메일이 존재하는지 확인
-export const isExist = async (email) => {
-    console.log("없는 이매일", email);
-};
-
-// DB에서 이미 구독 해지된 이메일임을 확인하는 비즈니스 로직
-export const isAlreadyUnsubscribed = async (email) => {
-    console.log("구독 해지 중복 확인:", email);
+    // DB에 등록된 이메일인지 확인
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        // 이미 구독해지된 이메일일 경우의 예외처리
+        if (existingUser.subscriptionStatus === false) {
+            throw new Error('ALREADY_UNSUBSCRIBED');
+        }
+        else {
+            return User.findOneAndUpdate(
+                { email },
+                { subscriptionStatus: false }
+            );
+        }
+    }
+    else {
+        // DB에 등록되지 않은 이메일일 경우의 예외처리
+        throw  new Error('UNREGISTERED');
+    }
 };
