@@ -4,6 +4,7 @@ import connectDB from './src/config/mongoose.js'
 import subscribeRoutes from './src/routes/subscribeRoutes.js'
 import authRoutes from "./src/routes/authRoutes.js"
 import dotenv from 'dotenv'
+import './src/cron/emailCron.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;

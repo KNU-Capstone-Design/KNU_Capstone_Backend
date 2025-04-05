@@ -51,3 +51,10 @@ export const unsubscribe = async (email) => {
         throw  new Error('UNREGISTERED');
     }
 };
+
+// 구독중인 사용자들을 반환
+export async function getSubscribedUsers() {
+    // 구독한 사용자만 필터링
+    return User.find({ subscriptionStatus : true });
+}
+
