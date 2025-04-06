@@ -13,5 +13,4 @@ export const generateToken = async (email) => {
         { upsert: true, new: true }
     );
     return token;
-
 };
