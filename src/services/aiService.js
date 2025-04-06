@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 
 dotenv.config();
 //임시 작성
-async function getFeedbackFromGroq(userAnswer) {
+export async function getFeedbackFromGroq(userAnswer) {
     const response = await axios.post(
         'https://api.groq.com/openai/v1/chat/completions',
         {
@@ -38,5 +38,3 @@ async function getFeedbackFromGroq(userAnswer) {
 
     return response.data.choices[0].message.content;
 }
-
-module.exports = { getFeedbackFromGroq };
