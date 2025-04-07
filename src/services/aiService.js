@@ -2,6 +2,7 @@ import axios from 'axios'
 import dotenv from 'dotenv'
 
 dotenv.config();
+<<<<<<< HEAD
 
 async function getFeedbackFromGroq(userAnswer) {
   const response = await axios.post(
@@ -12,6 +13,12 @@ async function getFeedbackFromGroq(userAnswer) {
       max_tokens: 700, // 800토큰이 600~700자임, 너무 길면 무한루프 나올수도 있음  적정수치 : 500 ~ 1000
       frequency_penalty: 0.3, // 같은 말이 너무 많이 나오는거 방지, "좋았습니다, 잘했습니다" 이런거 적게나오게됨, 적정수치 : 0.2 ~ 0.5
       messages: [
+=======
+//임시 작성
+export async function getFeedbackFromGroq(userAnswer) {
+    const response = await axios.post(
+        'https://api.groq.com/openai/v1/chat/completions',
+>>>>>>> a982055a88c8b9f632c8228150fd70b8b81525df
         {
           role: 'system',
           content: `너는 컴퓨터 회사의 면접관이야. 사용자의 답변을 다음 기준에 따라 평가해.
@@ -52,5 +59,8 @@ async function getFeedbackFromGroq(userAnswer) {
 
   return response.data.choices[0].message.content;
 }
+<<<<<<< HEAD
 
 export { getFeedbackFromGroq };
+=======
+>>>>>>> a982055a88c8b9f632c8228150fd70b8b81525df

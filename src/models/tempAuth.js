@@ -13,4 +13,4 @@ const tempAuthSchema = new mongoose.Schema({
 tempAuthSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 const TempAuth = mongoose.model('TempAuth', tempAuthSchema);
-export default TempAuth;
+export { TempAuth };
