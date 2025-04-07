@@ -2,6 +2,7 @@ import { generateToken } from "../services/authService.js";
 import { TEMP_TOKEN_EXPIRY_MS } from "../config/constants.js";
 import { TempAuth } from "../models/tempAuth.js";
 
+// 토큰 발급 컨트롤러
 export const requestToken = async (req, res) => {
     const { email } = req.body;
 

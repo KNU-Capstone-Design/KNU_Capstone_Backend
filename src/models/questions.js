@@ -26,4 +26,5 @@ const CategorySchema = new Schema({
     questions: [QuestionSchema]
 });
 
-module.exports = mongoose.model('Category', CategorySchema);
+const QuestionModel = mongoose.model('QuestionModel', CategorySchema);
+export { QuestionModel };
