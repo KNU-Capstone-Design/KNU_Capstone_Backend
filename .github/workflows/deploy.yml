@@ -103,5 +103,6 @@ jobs:
             cd ~/KNU_Capstone_Backend
             git pull origin main
             npm install
-            docker-compose down
-            docker-compose up -d --build
+            cd ~
+            docker-compose build app
+            docker-compose up -d app
