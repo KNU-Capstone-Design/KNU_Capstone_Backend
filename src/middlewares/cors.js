@@ -1,8 +1,11 @@
 // CORS 문제 해결 미들웨어
 import cors from 'cors'
+import dotenv from 'dotenv'
+
+dotenv.config();
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: process.env.FRONTURL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
