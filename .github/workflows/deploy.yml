@@ -105,5 +105,5 @@ jobs:
             npm install
             cd ~
             docker-compose down
-            docker-compose build app
+            docker-compose build app nginx
             docker-compose up -d app
