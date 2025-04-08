@@ -7,11 +7,11 @@ on:
     paths:
       - 'src/**'
       - 'swagger/openapi.yaml'
-      - 'docker-compose.yml'
       - 'Dockerfile'
       - 'package.json'
       - 'package-lock.json'
       - 'app.js'
+      - '.github/workflows/deploy.yml'
 
 jobs:
   check-scope:
@@ -84,7 +84,7 @@ jobs:
             "text": "📘 Swagger 문서가 업데이트되었습니다!\n🔗 https://knu-capstone-design.github.io/KNU_Capstone_Backend/>"
           }'
       
-
+  # 코드 배포시 도커 컨테이너 재시작( ~/docker-compose.yml)
   deploy-code:
     needs: [check-scope, deploy-swagger]
     if: always()
@@ -104,6 +104,6 @@ jobs:
             git pull origin main
             npm install
             cd ~
-            docker-compose down
+            docker-compose down 
             docker-compose build app nginx
-            docker-compose up -d app
+            docker-compose up -d
