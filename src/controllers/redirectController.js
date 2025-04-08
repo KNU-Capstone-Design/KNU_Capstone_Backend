@@ -2,6 +2,7 @@ import { generateToken} from "../services/authService.js";
 
 // 인증 후 사용자에게 서비스로 리다이렉트 해주는 컨트롤러
 export const requestTokenAndRedirect = async (req, res) => {
+
     // /api/auth/redirect?email=user@example.com&questionID=q001&target=answer 요청에서 쿼리 파라미터 추출
     const { email, questionID, target } = req.query;
     if (!email || !questionID || !target) { // 파라미터 누락시
