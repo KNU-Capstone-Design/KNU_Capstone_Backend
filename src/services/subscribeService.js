@@ -21,6 +21,15 @@ export const subscribe = async (email, categories, subscriptionStatus) => {
         // 이미 구독 중인 경우
         throw new Error('ALREADY_SUBSCRIBED');
     }
+    /*
+        사용자가 Backend,Frontend를 구독했을시 Java,JavaScript도 카테고리에 추가
+    */
+    if (categories.includes("Backend")) {
+        categories.push("Java");
+    }
+    if (categories.includes("Frontend")) {
+        categories.push("JavaScript");
+    }
     // 새로운 User객체를 생성
     const newUser = new User ({
         email,categories,subscriptionStatus
