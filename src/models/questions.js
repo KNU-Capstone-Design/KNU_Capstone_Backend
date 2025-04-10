@@ -6,7 +6,7 @@ const QuestionSchema = new Schema({
     // 질문별 고유 식별자
     questionId: {
         type: Number,
-        required: true
+        required: true,
     },
     // 질문 내용
     text: {

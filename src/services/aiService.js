@@ -2,7 +2,9 @@ import axios from 'axios'
 import dotenv from 'dotenv'
 
 dotenv.config();
-    async function getFeedbackFromGroq(userAnswer) {
+
+    /* groq api를 호출해서 피드백을 받는 비지니스 로직 */
+    async function getFeedbackFromGroq(userQuestion, userAnswer) {
     const response = await axios.post(
         'https://api.groq.com/openai/v1/chat/completions',
         {
@@ -30,7 +32,7 @@ dotenv.config();
                 },
                 {
                     role: 'user',
-                        content: `문제: 논클러스터드 인덱스의 기본 원리와 장단점은 무엇인가요?\n답변: ${userAnswer}`
+                        content: `문제:${userQuestion}\n답변: ${userAnswer}`
                 }
             ]
             },

@@ -1,5 +1,6 @@
 // 이메일 HTML 템플릿 작성
 
+// 질문 발송 이메일
 export function questionEmail({ answerUrl }) {
     return `
     <div style="font-family: Arial, sans-serif; padding: 20px;">
@@ -15,4 +16,9 @@ export function questionEmail({ answerUrl }) {
       ">답변하기</a>
     </div>
   `;
+}
+
+// 처음 가입시 발송하는 환영 이메일
+export function welcomeEmail() {
+
 }
