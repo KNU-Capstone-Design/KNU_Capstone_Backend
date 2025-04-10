@@ -5,13 +5,17 @@ const { Schema } = mongoose;
 const answerSchema = new Schema({
     // User 컬렉션 참조
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
 
     // 질문 식별자
-    questionId: { type: Number, required: true },
+    question: {
+        type: Schema.Types.ObjectId,
+        ref: 'Question',
+        required: true
+    },
     // 카테고리명
     category: { type: String, required: true },
 

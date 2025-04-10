@@ -36,11 +36,12 @@ export async function sendQuestionEmail({ to, questionId }) {
     await transporter.sendMail(mailOptions);
 }
 
-/* 구독 환영 이메일을 보내는 함수
-* @param {Object} param0 - 이메일 전송 파라미터
-* @param {string} param0.to - 수신자 이메일 주소
+/**
+ * 구독 환영 이메일을 보내는 함수
+ * @param {Object} param0 - 이메일 전송 파라미터
+ * @param {string} param0.to - 수신자 이메일 주소
 */
-export async function sendWelcomeEmail({ to, questionId}) {
+export async function sendWelcomeEmail({ to }) {
     const html = welcomeEmail();
 
     const mailOptions = {
@@ -48,5 +49,6 @@ export async function sendWelcomeEmail({ to, questionId}) {
         to,
         subject: "구독이 완료되었습니다!",
         html
-    }
+    };
+    await transporter.sendMail(mailOptions);
 }

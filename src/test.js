@@ -1,10 +1,8 @@
 // scripts/testEmailSend.js
 import dotenv from 'dotenv';
 import { sendQuestionEmail } from './services/mailService.js';
-import mongoose from 'mongoose'
-import { Category } from "./models/questions.js";
 import connectDB from "./config/mongoose.js";
-import User from "./models/users.js";
+import {Question} from "./models/questions.js";
 
 dotenv.config();
 connectDB();
@@ -22,15 +20,11 @@ connectDB();
 // };
 
 const dbTest = async () => {
-    const categories = await Category.find({}, { category: 1 });
-    console.log(categories);
-    const result = await Category.findOne({ category: "Algorithm" });
-
-    if (result) {
-        const question = result.questions.find(q => q.questionId === 1);
-        console.log(question?.text);
-        }
-    }
+    const question = await Question.find( { category: "Backend"});
+    console.log(question);
+    const question2 = await Question.findById("67f76e27cf776341c0c813cc");
+    console.log(question2);
+}
 
 dbTest();
 //test();

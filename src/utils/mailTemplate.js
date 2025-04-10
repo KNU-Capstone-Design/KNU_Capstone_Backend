@@ -20,5 +20,9 @@ export function questionEmail({ answerUrl }) {
 
 // 처음 가입시 발송하는 환영 이메일
 export function welcomeEmail() {
-
+    return `
+    <div style="font-family: Arial, sans-serif; padding: 20px;">
+      <h2>구독이 완료되었습니다.</h2>
+    </div>
+  `;
 }
