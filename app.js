@@ -11,9 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || 'localhost';
 
-/* 미들웨어 시작 CORS는 반드시 최상단에 위치해야함 */
-app.use(corsMiddleware);
-app.options('*', corsMiddleware); // 프리플라이트 요청 처리
+/* 미들웨어 시작*/
 app.use(express.json()); //JSON 파싱을 위한 미들웨어
 
 dotenv.config();
