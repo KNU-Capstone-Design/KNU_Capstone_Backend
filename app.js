@@ -5,12 +5,19 @@ import subscribeRoutes from './src/routes/subscribeRoutes.js'
 import authRoutes from "./src/routes/authRoutes.js"
 import dotenv from 'dotenv'
 import './src/cron/emailCron.js';
+import cors from 'cors'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || 'localhost';
 
 /* 미들웨어 시작*/
+app.use(cors({
+    origin: process.env.FRONTURL,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json()); //JSON 파싱을 위한 미들웨어
 
 dotenv.config();
