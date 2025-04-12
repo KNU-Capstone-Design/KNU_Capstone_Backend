@@ -1,7 +1,7 @@
 // 이메일 HTML 템플릿 작성
 
 // 질문 발송 이메일
-export function questionEmail({ answerUrl }) {
+export function questionEmail({ answerUrl, questionID }) {
     return `
     <div style="font-family: Arial, sans-serif; padding: 20px;">
       <h2>질문이 도착했습니다!</h2>

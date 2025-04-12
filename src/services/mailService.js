@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
-import {questionEmail, welcomeEmail} from '../utils/mailTemplate.js';
+import { questionEmail, welcomeEmail } from '../utils/mailTemplate.js';
+import { selectQuestion } from '../services/selectQuestionService.js'
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -24,7 +25,8 @@ const transporter = nodemailer.createTransport({
  */
 export async function sendQuestionEmail({ to, questionId }) {
     const answerUrl = 'http://20.39.191.62:3000/';
-    const html = questionEmail({ answerUrl });
+    const questionID = selectQuestion(to);
+    const html = questionEmail({ answerUrl, questionID });
 
     const mailOptions = {
         from: process.env.EMAIL_USER,

@@ -12,6 +12,11 @@ const userActivitySchema = new Schema({
         type: Date,
         required: true
     },
+    question: {
+        type: Schema.Types.ObjectId,
+        ref: 'Question',
+        required: true
+    },
     answers: [{
         type: Schema.Types.ObjectId,
         ref: 'Answer'
