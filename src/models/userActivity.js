@@ -12,6 +12,10 @@ const userActivitySchema = new Schema({
         type: Date,
         required: true
     },
+    category: {
+        type: String,
+        required: true
+    },
     question: {
         type: Schema.Types.ObjectId,
         ref: 'Question',
@@ -24,3 +28,6 @@ const userActivitySchema = new Schema({
 }, {
     timestamps: true
 });
+
+const UserActivity = mongoose.model('UserAcitivity', userActivitySchema);
+export { UserActivity };
