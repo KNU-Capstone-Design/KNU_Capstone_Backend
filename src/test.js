@@ -23,13 +23,16 @@ const test = async () => {
 
 const dbTest = async () => {
     const question = await Question.find( { category: "Backend"});
-    console.log(question);
-    const question2 = await Question.findById("67f76e27cf776341c0c813cc");
+   // console.log(question);
+    const question2 = await Question.findById("67f76e27cf776341c0c81408");
     console.log(question2);
 }
 
 const emailTest = async () => {
-    console.log(await selectQuestion('sunhokim28@gmail.com'));
+    const questionID =  await selectQuestion('sunhokim1@temp.com');
+    const question = await Question.findById(questionID);
+    //console.log(questionID);
+    console.log(question.text);
 }
 emailTest();
 //dbTest();

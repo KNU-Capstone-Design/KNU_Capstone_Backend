@@ -23,23 +23,20 @@ export async function selectQuestion(email) {
     let selectedCategory = null;
 
     // 이전에 CS 질문을 발송했다면 이번엔 TECH 발송
-    if (schedule.lastGroupType === 'CS') {
+    if (schedule.lastGroupType === "CS") {
         // 다음에 보낼 질문의 인덱스 선택
         const nextIndex = (schedule.lastTECHIndex + 1) % categories.length;
         selectedCategory = categories[nextIndex];
-
         // 이미 발송한 질문 목록 조회
         const sentQuestionIds = await UserActivity.find({ user: user._id,  category: selectedCategory }).distinct('question');
-
         // 중복 질문 방지
         nextQuestion = await Question.findOne({
             category: selectedCategory,
             _id: { $nin: sentQuestionIds }
         });
-
         // 다음 질문이 있다면 스케줄 갱신
         if (nextQuestion) {
-            schedule.lastGroupType = 'TECH';
+            schedule.lastGroupType = "TECH";
             schedule.lastTECHIndex = nextIndex;
         }
     } else {
@@ -56,7 +53,7 @@ export async function selectQuestion(email) {
 
         // 다음 질문이 있다면 스케줄 갱신
         if (nextQuestion) {
-            schedule.lastGroupType = 'CS';
+            schedule.lastGroupType = "CS";
             schedule.lastCSIndex = nextIndex;
         }
     }
