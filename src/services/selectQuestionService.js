@@ -46,7 +46,6 @@ export async function selectQuestion(email) {
         // 이전에 TECH 질문을 발송했다면 이번엔 CS 발송
         const nextIndex = (schedule.lastCSIndex + 1) % CS_CATEGORY.length;
         selectedCategory = CS_CATEGORY[nextIndex];
-
         // 이미 발송한 질문 목록 조회
         const sentQuestionIds = await UserActivity.find({ user: user._id,  category: selectedCategory }).distinct('question');
 

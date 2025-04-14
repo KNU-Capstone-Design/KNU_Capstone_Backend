@@ -9,8 +9,7 @@ const userActivitySchema = new Schema({
         required: true
     },
     date: {
-        type: Date,
-        required: true
+        type: Date
     },
     category: {
         type: String,

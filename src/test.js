@@ -4,6 +4,7 @@ import { sendQuestionEmail } from './services/mailService.js';
 import connectDB from "./config/mongoose.js";
 import {Question} from "./models/questions.js";
 import User from "./models/users.js";
+import {selectQuestion} from "./services/selectQuestionService.js";
 
 dotenv.config();
 connectDB();
@@ -26,5 +27,10 @@ const dbTest = async () => {
     const question2 = await Question.findById("67f76e27cf776341c0c813cc");
     console.log(question2);
 }
+
+const emailTest = async () => {
+    console.log(await selectQuestion('sunhokim28@gmail.com'));
+}
+emailTest();
 //dbTest();
 //test();
