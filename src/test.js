@@ -5,6 +5,7 @@ import connectDB from "./config/mongoose.js";
 import {Question} from "./models/questions.js";
 import User from "./models/users.js";
 import {selectQuestion} from "./services/selectQuestionService.js";
+import {questionEmail} from "./utils/mailTemplate.js";
 
 dotenv.config();
 connectDB();
@@ -30,8 +31,8 @@ const dbTest = async () => {
 
 const emailTest = async () => {
     const questionID =  await selectQuestion('sunhokim1@temp.com');
+    //const question = await Question.findById(questionID);
     const question = await Question.findById(questionID);
-    //console.log(questionID);
     console.log(question.text);
 }
 emailTest();

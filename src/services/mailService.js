@@ -26,8 +26,10 @@ const transporter = nodemailer.createTransport({
  */
 export async function sendQuestionEmail({ to, questionId }) {
     const answerUrl = 'http://20.39.191.62:3000/';
-    const question = Question.findById(selectQuestion(to)).text;
-    const html = questionEmail({ answerUrl, question });
+    const questionID = await selectQuestion(to);
+    const question = await Question.findById(questionID);
+    const questionText = question.text
+    const html = questionEmail({ answerUrl, questionText });
 
     const mailOptions = {
         from: process.env.EMAIL_USER,
@@ -35,8 +37,12 @@ export async function sendQuestionEmail({ to, questionId }) {
         subject: '오늘의 질문이 도착했습니다!',
         html,
     };
-
-    await transporter.sendMail(mailOptions);
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`[메일 전송 완료] to=${to}`);
+    } catch (error) {
+        console.error(`[메일 전송 실패] to=${to}:`, error);
+    }
 }
 
 /**
@@ -53,5 +59,10 @@ export async function sendWelcomeEmail({ to }) {
         subject: "구독이 완료되었습니다!",
         html
     };
-    await transporter.sendMail(mailOptions);
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`[메일 전송 완료] to=${to}`);
+    } catch (error) {
+        console.error(`[메일 전송 실패] to=${to}:`, error);
+    }
 }
