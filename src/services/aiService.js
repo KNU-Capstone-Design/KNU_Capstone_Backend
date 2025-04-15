@@ -8,14 +8,14 @@ export async function getFeedbackFromGroq(userQuestion, userAnswer) {
     const response = await axios.post(
         'https://api.groq.com/openai/v1/chat/completions',
         {
-            model: 'qwen-2.5-coder-32b',
+            model: 'meta-llama/llama-4-maverick-17b-128e-instruct',
             temperature: 0,  // 무작위성 조절 ,0에 가까울수록 답변이 안정적, 1에 가까울수록 다양함 적정수치 0.0 ~ 0.2
             max_tokens: 700, // 800토큰이 600~700자임, 너무 길면 무한루프 나올수도 있음  적정수치 : 500 ~ 1000
             frequency_penalty: 0.3, // 같은 말이 너무 많이 나오는거 방지, "좋았습니다, 잘했습니다" 이런거 적게나오게됨, 적정수치 : 0.2 ~ 0.5
             messages: [
                 {
                     role: 'system',
-                    content: `너는 컴퓨터 회사의 면접관이야. 사용자의 답변을 다음 기준에 따라 평가해.
+                    content: `너는 컴퓨터 회사의 면접관이야. 사용자의 답변을 다음 기준에 따라 너무 깐깐하지 않게 평가하고 출력 형식을 맞춰서 한글로 응답해.
                     [점수 기준]
                     - 개념이 정확한가: 30점
                     - 용어 사용이 정확한가: 20점
@@ -26,9 +26,9 @@ export async function getFeedbackFromGroq(userQuestion, userAnswer) {
                     [출력 형식은 아래 예시를 꼭 따를 것]
                     
                     점수: NN점
-                    잘한 점: ... (두 줄)
-                    부족한 점: ... (두 줄)
-                    고칠 점: ... (두 줄)`
+                    잘한 점: ... (세 줄)
+                    부족한 점: ... (세 줄)
+                    고칠 점: ... (세 줄)`
                 },
                 {
                     role: 'user',
@@ -43,6 +43,37 @@ export async function getFeedbackFromGroq(userQuestion, userAnswer) {
         }
     }
 );
+
+    return response.data.choices[0].message.content;
+}
+
+    /* 사용자가 모르겠어요 버튼을 클릭했을때 AI한테 정답을 제공받는 비지니스 로직 */
+export async function getAnswerFromGroq(userQuestion) {
+    const response = await axios.post(
+        'https://api.groq.com/openai/v1/chat/completions',
+        {
+            model: 'meta-llama/llama-4-maverick-17b-128e-instruct',
+            temperature: 0,  // 무작위성 조절 ,0에 가까울수록 답변이 안정적, 1에 가까울수록 다양함 적정수치 0.0 ~ 0.2
+            max_tokens: 700, // 800토큰이 600~700자임, 너무 길면 무한루프 나올수도 있음  적정수치 : 500 ~ 1000
+            frequency_penalty: 0.3, // 같은 말이 너무 많이 나오는거 방지, "좋았습니다, 잘했습니다" 이런거 적게나오게됨, 적정수치 : 0.2 ~ 0.5
+            messages: [
+                {
+                    role: 'system',
+                    content: '너는 실력있는 개발자이자 컴퓨터공학과 교수야 사용자가 질문을 아예 몰라서 너한테 물어본 상황이니 정확하고 간결하게 설명해'
+                },
+                {
+                    role: 'user',
+                    content: `문제:${userQuestion}`,
+                }
+            ]
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        }
+    );
 
     return response.data.choices[0].message.content;
 }
