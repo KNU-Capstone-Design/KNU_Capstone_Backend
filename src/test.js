@@ -31,10 +31,11 @@ const dbTest = async () => {
 }
 
 const emailTest = async () => {
-    const questionID =  await selectQuestion('sunhokim1@temp.com');
-    //const question = await Question.findById(questionID);
-    const question = await Question.findById(questionID);
-    console.log(question.text);
+    // const questionID =  await selectQuestion('sunhokim28@gmail.com');
+    // console.log(questionID);
+    // const question = await Question.findById(questionID);
+    // console.log(question.text);
+    await sendQuestionEmail({ to: "sunhokim28@gmail.com" });
 }
 
 const aiTest = async () => {
@@ -51,7 +52,7 @@ const aiTest = async () => {
     console.log(aiFeedback);
     //console.log(aiAnswer);
 }
-aiTest();
-//emailTest();
+//aiTest();
+emailTest();
 //dbTest();
 //test();

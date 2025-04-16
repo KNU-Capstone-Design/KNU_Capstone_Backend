@@ -4,6 +4,7 @@ import cron from 'node-cron'
 import moment from 'moment-timezone'
 import { getSubscribedUsers } from '../services/subscribeService.js';
 import { sendQuestionEmail } from '../services/mailService.js';
+import {selectQuestion} from "../services/selectQuestionService.js";
 
 // 매일 9시마다 실행
 cron.schedule('0 0 9 * * *', async () => {
@@ -12,8 +13,7 @@ cron.schedule('0 0 9 * * *', async () => {
     const users = await getSubscribedUsers(); // 이메일 보낼 대상
     for (const user of users) {
         await sendQuestionEmail({
-            to: user.email,
-            questionId: '랜덤 또는 오늘의 질문 ID',
+            to: user.email
         });
     }
     console.log('[CRON] 이메일 전송 완료');
