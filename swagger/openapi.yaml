@@ -183,7 +183,7 @@ paths:
       tags:
         - Users
       summary: 사용자 정보를 수정합니다.
-      description: 사용자 구독 항목을 수정합니다.(이메일은 변경 x), 서버에 보내져야하는건 변경이후 구독한 항목 전부임 ex) 기존에 백엔드만 구독했는데 안드로이드를 추가하면 ["Backend", "Android"]가 되어야함.
+      description: 사용자 구독 항목을 수정합니다.(이메일은 변경 x), 서버에 보내져야하는건 변경이후 구독한 항목 전부임 ex) 기존에 백엔드만 구독했는데 안드로이드를 추가하면 ["Backend", "Android"]가 되어야합니다.
       security:
         - bearerAuth: [ ]
       requestBody:
