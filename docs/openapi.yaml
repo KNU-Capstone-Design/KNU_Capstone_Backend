@@ -7,15 +7,15 @@ info:
 tags:
   - name: Subscribe
     description: 이메일 구독 등록 및 해지
-  - name: Questions
-    description: 문제 발송
+  - name: Users
+    description: 사용자 정보 수정 및 조회
   - name: Answers
     description: 사용자 답변 제출 및 이력 조회
   - name: Auth
     description: 이메일 기반 인증 처리
 
 paths:
-  /api/subscribers:
+  /api/subscribe:
     post:
       tags:
         - Subscribe
@@ -37,7 +37,7 @@ paths:
                 category:
                   type: array
                   format: array
-                  example: ["Network", "OS", "Backend"]
+                  example: ["Network", "Backend"]
       responses:
         '201':
           description: 구독 등록 완료
@@ -76,7 +76,7 @@ paths:
       tags:
         - Subscribe
       summary: 구독 해지
-      description: 이메일 주소를 경로 파라미터로 받아 구독을 해지합니다. (DB에서 이메일 삭제하지 않음)
+      description: 이메일 주소를 받아 구독을 해지합니다. (DB에서 이메일 삭제하지 않음)
       requestBody:
         required: true
         content:
@@ -134,15 +134,78 @@ paths:
                     type: string
                     example: 서버 오류
 
-  /api/questions:
-    post:
+  /api/users:
+    get:
       tags:
-        - Questions
-      summary: 문제 발송
-      description: 등록된 모든 구독자에게 문제 메일을 발송.
+        - Users
+      summary: 사용자 정보를 조회합니다.
+      description: 사용자의 이메일,구독 정보를 DB에서 조회해서 반환합니다.
+      security:
+        - bearerAuth: [ ]
       responses:
         '200':
-          description: 문제 메일 발송 완료
+          description: 사용자 이메일,구독 정보 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    format: email
+                    example: user@example.com
+                  category:
+                    type: string
+                    example: ["Backend","Frontend"]
+
+        '401':
+          description: 인증 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 인증 오류
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 서버 오류
+
+    patch:
+      tags:
+        - Users
+      summary: 사용자 정보를 수정합니다.
+      description: 사용자 구독 항목을 수정합니다.(이메일은 변경 x), 서버에 보내져야하는건 변경이후 구독한 항목 전부임 ex) 기존에 백엔드만 구독했는데 안드로이드를 추가하면 ["Backend", "Android"]가 되어야합니다.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                category:
+                  type: array
+                  format: array
+                  example: ["Backend", "Frontend" ]
+      responses:
+        '200':
+          description: 구독 항목 변경 완료
           content:
             application/json:
               schema:
@@ -150,7 +213,18 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: 메일 발송 완료.
+                    example: "구독 항목 변경 완료"
+
+        '401':
+          description: 인증 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 인증 오류
         '500':
           description: 서버 오류
           content:
