@@ -24,7 +24,7 @@ const transporter = nodemailer.createTransport({
  * @param {string} param0.to - 수신자 이메일 주소
  * @param {string} param0.questionId - 질문 식별자
  */
-export async function sendQuestionEmail({ to}) {
+export async function sendQuestionEmail({ to }) {
     const answerUrl = 'http://20.39.191.62:3000/';
     const questionID = await selectQuestion(to);
     const question = await Question.findById(questionID);

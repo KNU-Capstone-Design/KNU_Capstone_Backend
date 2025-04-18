@@ -53,6 +53,6 @@ const aiTest = async () => {
     //console.log(aiAnswer);
 }
 //aiTest();
-emailTest();
+//emailTest();
 //dbTest();
 //test();
