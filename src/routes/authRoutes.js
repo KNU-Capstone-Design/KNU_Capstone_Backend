@@ -1,11 +1,10 @@
 import express from 'express'
-import { requestToken } from "../controllers/authController.js";
-import {requestTokenAndRedirect} from "../controllers/redirectController.js";
+import { verifyTokenAndSetCookie } from "../controllers/authController.js";
+import { requestTokenAndRedirect } from "../controllers/redirectController.js";
 
 const router = express.Router();
 
-// POST /api/auth/token 요청시 라우팅
-router.post('/token', requestToken);
+router.post("/verify", verifyTokenAndSetCookie);
 
 // GET /api/auth/redirect? 요청시 라우팅
 router.get('/auth/redirect', requestTokenAndRedirect);

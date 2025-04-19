@@ -1,5 +1,6 @@
 import User from '../models/users.js'
 import {sendWelcomeEmail} from "./mailService.js";
+import {generateToken} from "./authService.js";
 
 /*
     DB에 이메일 등록하는 비즈니스 로직
@@ -35,6 +36,8 @@ export const subscribe = async (email, categories, subscriptionStatus) => {
     const newUser = new User ({
         email,categories,subscriptionStatus
     });
+    // 토큰 생성
+    await generateToken(email);
     // 환영 이메일 발송
     await sendWelcomeEmail( { to: email });
     // DB에 저장하고 저장된 문서를 반환

@@ -8,19 +8,21 @@ import './src/cron/emailCron.js';
 import cors from 'cors'
 import users from "./src/models/users.js";
 import userRoutes from "./src/routes/userRoutes.js";
+import cookieParser from "cookie-parser"
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || 'localhost';
 
-/* 미들웨어 시작*/
+/* 미들웨어 시작 */
 app.use(cors({
     origin: process.env.FRONTURL,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json()); //JSON 파싱을 위한 미들웨어
+app.use(express.json()); // JSON 파싱을 위한 미들웨어
+app.use(cookieParser()); // 쿠키 파싱을 위한 미들웨어
 
 dotenv.config();
 
@@ -32,6 +34,7 @@ app.get('/', (req, res) => {
 // 라우터 설정
 app.use('/api/users', userRoutes);
 app.use('/api/subscribe', subscribeRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/auth', authRoutes);
 
 // DB실행

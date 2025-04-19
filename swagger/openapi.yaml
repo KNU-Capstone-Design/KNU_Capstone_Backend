@@ -139,7 +139,7 @@ paths:
       tags:
         - Users
       summary: 사용자 정보를 조회합니다.
-      description: 사용자의 이메일,구독 정보를 DB에서 조회해서 반환합니다.
+      description: 사용자의 구독 정보 및 상태를 DB에서 조회해서 반환합니다.
       security:
         - bearerAuth: [ ]
       responses:
@@ -150,10 +150,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  email:
-                    type: string
-                    format: email
-                    example: user@example.com
+                  subscriptionStatus:
+                    type: boolean
+                    example: 'true'
                   category:
                     type: string
                     example: ["Backend","Frontend"]
@@ -195,10 +194,6 @@ paths:
               required:
                 - email
               properties:
-                email:
-                  type: string
-                  format: email
-                  example: user@example.com
                 category:
                   type: array
                   format: array
@@ -545,17 +540,12 @@ paths:
                     type: string
                     example: 서버 오류.
 
-
-
-
-
-
-  /api/auth/token:
+  /api/auth/verify:
     post:
-      summary: 이메일 기반 임시 토큰 요청
-      description: 등록된 이메일 주소로 질문을 받았을 때, 사용자가 '답변하기' 또는 '오답노트 보기' 버튼을 클릭하면 호출되는 API로, 해당 이메일에 대한 임시 토큰을 생성하여 인증에 사용됩니다.
       tags:
         - Auth
+      summary: 이메일 인증 토큰을 검증하고 HttpOnly 쿠키로 설정
+      description: 이메일 링크를 클릭한 사용자가 제공한 토큰을 검증하고, 인증된 사용자로 간주하여 토큰을 HttpOnly 쿠키로 저장합니다.
       requestBody:
         required: true
         content:
@@ -563,28 +553,24 @@ paths:
             schema:
               type: object
               required:
-                - email
+                - token
               properties:
-                email:
+                token:
                   type: string
-                  format: email
-                  example: temp@temp.com
+                  example: "abc123xyz890token"
       responses:
         '200':
-          description: 토큰 생성 성공
+          description: 인증 성공 및 쿠키 설정 완료
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  token:
+                  success:
                     type: string
-                    example: a9f4b3c1d22e1cfa8b9
-                  message:
-                    type: string
-                    example: 임시 토큰이 발급되었습니다.
+                    example: "토큰 인증 성공"
         '400':
-          description: 이메일 누락
+          description: 토큰 누락
           content:
             application/json:
               schema:
@@ -592,9 +578,19 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: 이메일이 누락되었습니다.
+                    example: "토큰이 필요합니다."
+        '401':
+          description: 유효하지 않은 토큰
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "유효하지 않은 토큰입니다."
         '500':
-          description: 서버 에러
+          description: 서버 오류
           content:
             application/json:
               schema:
@@ -602,11 +598,4 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: 서버 오류
-
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: Token
+                    example: "서버 오류 발생"

@@ -1,25 +1,27 @@
-import { generateToken } from "../services/authService.js";
-import { TEMP_TOKEN_EXPIRY_MS } from "../config/constants.js";
-import { TempAuth } from "../models/tempAuth.js";
+import { UserAuth } from "../models/userAuth.js";
 
-// 토큰 발급 컨트롤러
-export const requestToken = async (req, res) => {
-    const { email } = req.body;
-
-    // 이메일이 누락됬을 경우의 예외 처리
-    if (!email) {
-        return res.status(400).json({ error: '이메일이 누락되었습니다.' });
-    }
-
+export const verifyTokenAndSetCookie = async (req, res) => {
     try {
-        const token = await generateToken(email);
+        const { token } = req.body;
 
-        return res.status(200).json({
-            token,
-            message: '임시 토큰이 발급되었습니다.'
+        if (!token) {
+            return res.status(400).json({ error: "토큰이 없습니다." });
+        }
+
+        const record = await UserAuth.findOne({ token });
+        if (!record) {
+            return res.status(401).json({ error: "유효하지 않은 토큰입니다." });
+        }
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false, // Https 적용 후 반드시 true로 설정
+            sameSite: "strict",
+            maxAge: 24 * 60 * 60 * 1000 // 1일
         });
+
+        return res.status(200).json({ message: "토큰 인증 성공" });
     } catch (err) {
-        console.error('Token 발급 실패', err);
-        res.status(500).json({ error: "Server error" });
+        return res.status(500).json({ error: "Server error" });
     }
 };
