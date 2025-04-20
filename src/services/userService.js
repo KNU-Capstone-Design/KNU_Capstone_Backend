@@ -15,5 +15,21 @@ export async function getUserInfo(email) {
     catch (error) {
         console.error("[사용자 정보 조회 실패]", error);
     }
+}
 
+/**
+ *  @param email - 사용자 이메일
+ *  @param category - 사용자가 변경후 구독하고 있는 카테고리
+ */
+
+export async function patchUserInfo(email, category) {
+    try {
+        return await User.findOneAndUpdate(
+            { email },
+            { categories: category }
+        );
+    }
+    catch (error) {
+        console.error("[사용자 정보 변경 실패]", error);
+    }
 }

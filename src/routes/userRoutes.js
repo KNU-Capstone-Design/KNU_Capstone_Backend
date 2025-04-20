@@ -1,13 +1,14 @@
 import express from 'express'
 import {requestTokenAndRedirect} from "../controllers/redirectController.js";
-import { getInfo } from "../controllers/userCotroller.js";
+import {getInfo, patchInfo} from "../controllers/userCotroller.js";
+import {validateToken} from "../middlewares/validateToken.js";
 
 const router = express.Router();
 
-// GET /api/users 요청시 라우팅
-//router.patch('/',);
-
 // PATCH /api/users 요청시 라우팅
-router.get('/', getInfo);
+router.patch('/', validateToken, patchInfo);
+
+// GET /api/users 요청시 라우팅
+router.get('/', validateToken, getInfo);
 
 export default router;
