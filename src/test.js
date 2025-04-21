@@ -1,26 +1,20 @@
 // scripts/testEmailSend.js
 import dotenv from 'dotenv';
-import { sendQuestionEmail } from './services/mailService.js';
+import {sendQuestionEmail, sendWelcomeEmail} from './services/mailService.js';
 import connectDB from "./config/mongoose.js";
 import {Question} from "./models/questions.js";
 import User from "./models/users.js";
 import {selectQuestion} from "./services/selectQuestionService.js";
 import {questionEmail} from "./utils/mailTemplate.js";
 import {getAnswerFromGroq, getFeedbackFromGroq} from "./services/aiService.js";
+import {UserAuth} from "./models/userAuth.js";
 
 dotenv.config();
 connectDB();
 
 const test = async () => {
-    try {
-        await sendQuestionEmail({
-            to: 'sunhokim28@gmail.com',
-            questionId: 'dummy-question-id-123',
-        });
-        console.log('✅ 이메일 전송 성공');
-    } catch (error) {
-        console.error('❌ 이메일 전송 실패:', error);
-    }
+    const token = await UserAuth.findOne({ email: "sunhokim28@gmail.com" }).select("token");
+    console.log(token.token);
 };
 
 const dbTest = async () => {
@@ -36,6 +30,7 @@ const emailTest = async () => {
     // const question = await Question.findById(questionID);
     // console.log(question.text);
     await sendQuestionEmail({ to: "sunhokim28@gmail.com" });
+    //await sendWelcomeEmail({to: "sunhokim28@gmail.com"});
 }
 
 const aiTest = async () => {
@@ -53,6 +48,6 @@ const aiTest = async () => {
     //console.log(aiAnswer);
 }
 //aiTest();
-//emailTest();
+emailTest();
 //dbTest();
 //test();

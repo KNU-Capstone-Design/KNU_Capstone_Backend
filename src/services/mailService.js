@@ -3,6 +3,7 @@ import { questionEmail, welcomeEmail } from '../utils/mailTemplate.js';
 import { selectQuestion } from '../services/selectQuestionService.js'
 import dotenv from 'dotenv';
 import { Question } from "../models/questions.js";
+import {UserAuth} from "../models/userAuth.js";
 
 dotenv.config();
 
@@ -25,9 +26,11 @@ const transporter = nodemailer.createTransport({
  * @param {string} param0.questionId - 질문 식별자
  */
 export async function sendQuestionEmail({ to }) {
-    const answerUrl = 'http://20.39.191.62:3000/';
     const questionID = await selectQuestion(to);
+    const getToken = await UserAuth.find({ email: to }).select("token");
+    const token = getToken[0].token;
     const question = await Question.findById(questionID);
+    const answerUrl = process.env.SERVER_URL + `/verify?token=${token}&redirect=profile`;
     const questionText = question.text
     const html = questionEmail({ answerUrl, questionText });
 
