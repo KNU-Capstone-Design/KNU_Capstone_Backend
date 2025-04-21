@@ -1,5 +1,5 @@
 import express from 'express'
-import {requestTokenAndRedirect} from "../controllers/redirectController.js";
+import { redirectController } from "../controllers/redirectController.js";
 import {getInfo, patchInfo} from "../controllers/userCotroller.js";
 import {validateToken} from "../middlewares/validateToken.js";
 
