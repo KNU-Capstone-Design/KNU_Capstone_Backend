@@ -15,8 +15,8 @@ export const redirectController = async (req, res) => {
         };
         const path = redirectMap[target];
         if (!path) return res.status(400).send("유효하지 않은 target입니다.");
-        // 리다이렉트 응답을 반환하여 자동으로 이동시킴.
-        const redirectUrl = `http://20.39.191.62:3000${path}?questionID=${questionID}`;
+        // 리다이렉트 응답을 반환하여 자동으로 이동시킴
+        const redirectUrl = `${process.env.FRONTEND_URL}${path}?questionID=${questionID}`;
         return res.redirect(302, redirectUrl);
     } catch (err) {
         console.error("리다이렉트 실패", err);

@@ -47,7 +47,7 @@ const aiTest = async () => {
     console.log(aiFeedback);
     //console.log(aiAnswer);
 }
-//aiTest();
-emailTest();
+aiTest();
+//emailTest();
 //dbTest();
 //test();
