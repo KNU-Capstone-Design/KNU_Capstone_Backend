@@ -4,9 +4,6 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 
 export const setupMiddleware = (app) => {
-    // 보안 헤더 설정
-    app.use(helmet());
-
     // CORS 설정
     app.use(cors({
         origin: process.env.FRONTEND_URL,
@@ -14,6 +11,9 @@ export const setupMiddleware = (app) => {
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization']
     }));
+
+    // 보안 헤더 설정
+    app.use(helmet());
 
     // 기본 미들웨어
     app.use(express.json());

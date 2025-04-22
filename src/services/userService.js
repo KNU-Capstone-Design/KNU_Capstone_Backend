@@ -24,6 +24,15 @@ export async function getUserInfo(email) {
 
 export async function patchUserInfo(email, category) {
     try {
+        /*
+        사용자가 Backend,Frontend를 구독했을시 Java,JavaScript도 카테고리에 추가
+        */
+        if (category.includes("Backend")) {
+            category.push("Java");
+        }
+        if (category.includes("Frontend")) {
+            category.push("JavaScript");
+        }
         return await User.findOneAndUpdate(
             { email },
             { categories: category }
