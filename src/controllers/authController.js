@@ -16,7 +16,7 @@ export const verifyTokenAndSetCookie = async (req, res) => {
         res.cookie("token", token, {
             httpOnly: true,
             secure: true, // Https 적용 후 반드시 true로 설정
-            sameSite: "strict",
+            sameSite: "None",
             maxAge: 24 * 60 * 60 * 1000 // 1일
         });
 
