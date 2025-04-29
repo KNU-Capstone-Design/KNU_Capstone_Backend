@@ -10,7 +10,7 @@ dotenv.config();
 // nodemailer transporter 생성 (SMTP 설정)
 const transporter = nodemailer.createTransport({
     service:'gmail',
-    host: `"Myundo 알림" <${process.env.EMAIL_USER}>`,
+    /*host: `"Myundo 알림" <${process.env.EMAIL_USER}>`,*/
     port: 465, // SSL 포트(465)
     secure: true, // SSL 사용 여부
     auth: {
@@ -35,9 +35,10 @@ export async function sendQuestionEmail({ to }) {
     const html = questionEmail({ answerUrl, questionText });
 
     const mailOptions = {
-        from: 'Myundo 알림' + process.env.EMAIL_USER,
+        from: `"Myundo" <${process.env.EMAIL_USER}>`,
         to,
         subject: '오늘의 질문이 도착했습니다!',
+        text: '오늘도 화이팅!',
         html,
     };
     try {
@@ -57,9 +58,10 @@ export async function sendWelcomeEmail({ to }) {
     const html = welcomeEmail();
 
     const mailOptions = {
-        from: `"Myundo 알림" <${process.env.EMAIL_USER}>`,
+        from: `"Myundo" <${process.env.EMAIL_USER}>`,
         to,
         subject: "구독이 완료되었습니다!",
+        text: "구독 완료!",
         html
     };
     try {

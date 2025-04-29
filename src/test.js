@@ -30,7 +30,7 @@ const emailTest = async () => {
     // const question = await Question.findById(questionID);
     // console.log(question.text);
     //await sendQuestionEmail({ to: "sunhokim28@gmail.com" });
-    await sendWelcomeEmail({to: "sunhokim28@gmail.com"});
+    await sendWelcomeEmail({to: "ksh2000@kangwon.ac.kr" });
 }
 
 const aiTest = async () => {
