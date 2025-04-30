@@ -3,9 +3,13 @@ import { returnFeedBack } from "/src/services/answerService.js";
 // 답변 제출을 처리하는 컨트롤러
 export const requestAnswer = async (req, res) => {
     try {
-        const { questionID, answer, token } = req.body;
-        const result = await returnFeedBack(questionID, answer, token);
-
+        const { questionID, answer } = req.body;
+        const result = await returnFeedBack(questionID, answer);
+        if (!result) {
+            return res.status(400).json({
+                message: "답변 제출 실패"
+            });
+        }
         return res.status(200).json({
             message: "답변 제출 완료"
         });

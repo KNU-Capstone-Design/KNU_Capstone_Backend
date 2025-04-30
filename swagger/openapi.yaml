@@ -266,6 +266,16 @@ paths:
                   message:
                     type: string
                     example: 답변 제출 완료
+        '400':
+          description: 답변 제출 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 답변 제출 실패          
         '401':
           description: 인증 오류
           content:

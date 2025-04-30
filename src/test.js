@@ -18,9 +18,9 @@ const test = async () => {
 };
 
 const dbTest = async () => {
-    const question = await Question.find( { category: "Backend"});
-   // console.log(question);
-    const question2 = await Question.findById("67f76e27cf776341c0c81408");
+    //const question = await Question.find( { category: "Backend"});
+    //console.log(question);
+    const question2 = (await Question.findById("67f76e27cf776341c0c81408").select("text").lean()).text;
     console.log(question2);
 }
 
@@ -48,6 +48,6 @@ const aiTest = async () => {
     //console.log(aiAnswer);
 }
 //aiTest();
-emailTest();
-//dbTest();
+//emailTest();
+dbTest();
 //test();
