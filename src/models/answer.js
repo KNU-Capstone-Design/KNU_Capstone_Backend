@@ -17,7 +17,10 @@ const answerSchema = new Schema({
         required: true
     },
     // 카테고리명
-    category: { type: String, required: true },
+    category: { 
+        type: String, 
+        required: true,
+    },
 
     // 사용자의 답변 내용
     answerText: { type: String, required: true },
@@ -34,7 +37,21 @@ const answerSchema = new Schema({
     isFinal: { type: Boolean, default: true },
     revealedAnswer: { type: Boolean, default: false }
 }, {
-    timestamps: true  // createdAt, updatedAt 자동생성
+    timestamps: true,  // createdAt, updatedAt 자동생성
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+
+// 인덱스 추가 - 성능 최적화
+answerSchema.index({ user: 1, question: 1 });
+answerSchema.index({ submittedAt: -1 });
+
+// 가상 필드 추가 - 연관된 활동 정보 쉽게 조회
+answerSchema.virtual('activityDetails', {
+    ref: 'UserActivity',
+    localField: '_id',
+    foreignField: 'answers',
+    justOne: true
 });
 
 const Answer = mongoose.model('Answer', answerSchema);

@@ -29,8 +29,8 @@ const emailTest = async () => {
     // console.log(questionID);
     // const question = await Question.findById(questionID);
     // console.log(question.text);
-    //await sendQuestionEmail({ to: "sunhokim28@gmail.com" });
-    await sendWelcomeEmail({to: "ksh2000@kangwon.ac.kr" });
+    await sendQuestionEmail({ to: "sunhokim28@gmail.com" });
+    //await sendWelcomeEmail({to: "ksh2000@kangwon.ac.kr" });
 }
 
 const aiTest = async () => {
@@ -48,6 +48,6 @@ const aiTest = async () => {
     //console.log(aiAnswer);
 }
 //aiTest();
-//emailTest();
-dbTest();
+emailTest();
+//dbTest();
 //test();

@@ -31,8 +31,8 @@ export async function sendQuestionEmail({ to }) {
     const token = getToken[0].token;
     const question = await Question.findById(questionID);
     const answerUrl = process.env.SERVER_URL + `/verify?token=${token}&redirect=profile`;
-    const questionText = question.text
-    const html = questionEmail({ answerUrl, questionText });
+    const { text: questionText, category } = question;
+    const html = questionEmail({ answerUrl, questionText, category });
 
     const mailOptions = {
         from: `"Myundo" <${process.env.EMAIL_USER}>`,
