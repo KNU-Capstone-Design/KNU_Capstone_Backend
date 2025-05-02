@@ -11,7 +11,8 @@ export async function getFeedbackFromGroq(userQuestion, userAnswer) {
             model: 'meta-llama/llama-4-maverick-17b-128e-instruct',
             temperature: 0,  // 무작위성 조절 ,0에 가까울수록 답변이 안정적, 1에 가까울수록 다양함 적정수치 0.0 ~ 0.2
             max_tokens: 700, // 800토큰이 600~700자임, 너무 길면 무한루프 나올수도 있음  적정수치 : 500 ~ 1000
-            frequency_penalty: 0.3, // 같은 말이 너무 많이 나오는거 방지, "좋았습니다, 잘했습니다" 이런거 적게나오게됨, 적정수치 : 0.2 ~ 0.5
+            top_p: 0.8, // 모델이 다음 단어를 생성할 때, 확률이 높은 상위 k개만 고려해서 무작위로 선택합니다.
+            // frequency_penalty: 0.3 같은 말이 너무 많이 나오는거 방지, 적정수치 : 0.2 ~ 0.5, llama 계열에선 의미 없음, repetition_penalty 값이 좋은데 API에서 안받음
             messages: [
                 {
                     role: 'system',
@@ -28,7 +29,9 @@ export async function getFeedbackFromGroq(userQuestion, userAnswer) {
                     점수: NN점
                     잘한 점: ... (세 줄)
                     부족한 점: ... (세 줄)
-                    고칠 점: ... (세 줄)`
+                    고칠 점: ... (세 줄)
+                    `
+
                 },
                 {
                     role: 'user',
@@ -55,7 +58,8 @@ export async function getAnswerFromGroq(userQuestion) {
             model: 'meta-llama/llama-4-maverick-17b-128e-instruct',
             temperature: 0,  // 무작위성 조절 ,0에 가까울수록 답변이 안정적, 1에 가까울수록 다양함 적정수치 0.0 ~ 0.2
             max_tokens: 700, // 800토큰이 600~700자임, 너무 길면 무한루프 나올수도 있음  적정수치 : 500 ~ 1000
-            frequency_penalty: 0.3, // 같은 말이 너무 많이 나오는거 방지, "좋았습니다, 잘했습니다" 이런거 적게나오게됨, 적정수치 : 0.2 ~ 0.5
+            top_p: 0.8, // 모델이 다음 단어를 생성할 때, 확률이 높은 상위 k개만 고려해서 무작위로 선택합니다.
+            // frequency_penalty: 0.3 같은 말이 너무 많이 나오는거 방지, 적정수치 : 0.2 ~ 0.5, llama 계열에선 의미 없음, repetition_penalty 값이 좋은데 API에서 안받음
             messages: [
                 {
                     role: 'system',
