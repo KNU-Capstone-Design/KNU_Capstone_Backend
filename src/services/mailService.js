@@ -26,12 +26,11 @@ const transporter = nodemailer.createTransport({
  * @param {string} param0.questionId - 질문 식별자
  */
 export async function sendQuestionEmail({ to }) {
-    const questionID = await selectQuestion(to);
+    const questionId = await selectQuestion(to);
     const getToken = await UserAuth.find({ email: to }).select("token");
     const token = getToken[0].token;
-    const question = await Question.findById(questionID);
-    const answerUrl = process.env.SERVER_URL + `/verify?token=${token}&redirect=profile`;
-    const { text: questionText, category } = question;
+    const answerUrl = process.env.SERVER_URL + `/verify?token=${token}&question=${questionID}&redirect=answer`;
+    const { text: questionText, category } = await Question.findById(questionId);
     const html = questionEmail({ answerUrl, questionText, category });
 
     const mailOptions = {
