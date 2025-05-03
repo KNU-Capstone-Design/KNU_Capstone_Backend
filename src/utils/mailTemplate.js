@@ -1,7 +1,7 @@
 // 이메일 HTML 템플릿 작성
 
 // 질문 발송 이메일
-export function questionEmail({ answerUrl, questionText, category }) {
+export function questionEmail({ answerUrl, questionText, category, profileUrl }) {
     return `
   <head>
     <meta charset="UTF-8">
@@ -43,7 +43,7 @@ export function questionEmail({ answerUrl, questionText, category }) {
               </td>
               <td width="33%" align="right">
                 <!-- 내 정보 버튼 -->
-                <a href="내정보 링크"
+                <a href="${profileUrl}"
                    style="display: inline-block; border: 1px solid #dbe5ff; border-radius: 12px; padding: 8px; text-align: center; text-decoration: none;">
                   <div style="font-size: 18px;">👤</div>
                   <div style="font-size: 12px; color: #000000;">내 정보</div>
@@ -59,7 +59,7 @@ export function questionEmail({ answerUrl, questionText, category }) {
 }
 
 // 처음 가입시 발송하는 환영 이메일
-export function welcomeEmail() {
+export function welcomeEmail(profileUrl) {
     return `
         <head>
         <meta charset="UTF-8">
@@ -92,7 +92,7 @@ export function welcomeEmail() {
                     <tr>
                         <td width="33%" align="right">
                             <!-- 내 정보 버튼 -->
-                            <a href="내정보 링크"
+                            <a href="${profileUrl}"
                                style="display: inline-block; border: 1px solid #dbe5ff; border-radius: 12px; padding: 8px; text-align: center; text-decoration: none;">
                                 <div style="font-size: 18px;">👤</div>
                                 <div style="font-size: 12px; color: #000000;">내 정보</div>

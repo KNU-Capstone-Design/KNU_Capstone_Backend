@@ -1,16 +1,15 @@
 import nodemailer from 'nodemailer';
 import { questionEmail, welcomeEmail } from '../utils/mailTemplate.js';
-import { selectQuestion } from '../services/selectQuestionService.js'
+import { selectQuestion } from './selectQuestionService.js';
 import dotenv from 'dotenv';
 import { Question } from "../models/questions.js";
-import {UserAuth} from "../models/userAuth.js";
+import { UserAuth } from "../models/userAuth.js";
 
 dotenv.config();
 
 // nodemailer transporter 생성 (SMTP 설정)
 const transporter = nodemailer.createTransport({
-    service:'gmail',
-    /*host: `"Myundo 알림" <${process.env.EMAIL_USER}>`,*/
+    service: 'gmail',
     port: 465, // SSL 포트(465)
     secure: true, // SSL 사용 여부
     auth: {
@@ -19,27 +18,27 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-/**
- * 질문 전송 이메일을 보내는 함수
- * @param {Object} param0 - 이메일 전송 파라미터
- * @param {string} param0.to - 수신자 이메일 주소
- * @param {string} param0.questionId - 질문 식별자
- */
-export async function sendQuestionEmail({ to }) {
-    const questionId = await selectQuestion(to);
-    const getToken = await UserAuth.find({ email: to }).select("token");
-    const token = getToken[0].token;
-    const answerUrl = process.env.SERVER_URL + `/verify?token=${token}&question=${questionID}&redirect=answer`;
-    const { text: questionText, category } = await Question.findById(questionId);
-    const html = questionEmail({ answerUrl, questionText, category });
+// 사용자 이메일로부터 토큰을 조회하는 함수
+async function getTokenByEmail(email) {
+    const user = await UserAuth.findOne({ email }).select("token");
+    return user?.token;
+}
 
+//  토큰을 기반으로 프로필 페이지 URL을 생성하는 함수
+function getProfileUrl(token) {
+    return `${process.env.SERVER_URL}/verify?token=${token}&redirect=profile`;
+}
+
+//  공통 메일 전송 함수
+async function sendEmail({ to, subject, html, text }) {
     const mailOptions = {
         from: `"Myundo" <${process.env.EMAIL_USER}>`,
         to,
-        subject: '오늘의 질문이 도착했습니다!',
-        text: '오늘도 화이팅!',
-        html,
+        subject,
+        text,
+        html
     };
+
     try {
         await transporter.sendMail(mailOptions);
         console.log(`[메일 전송 완료] to=${to}`);
@@ -49,24 +48,52 @@ export async function sendQuestionEmail({ to }) {
 }
 
 /**
+ * 질문 전송 이메일을 보내는 함수
+ * @param {Object} param0 - 이메일 전송 파라미터
+ * @param {string} param0.to - 수신자 이메일 주소
+ */
+export async function sendQuestionEmail({ to }) {
+    // 질문 ID 선택
+    const questionId = await selectQuestion(to);
+
+    // 토큰 조회 및 URL 생성
+    const token = await getTokenByEmail(to);
+    const answerUrl = `${process.env.SERVER_URL}/verify?token=${token}&question=${questionId}&redirect=answer`;
+    const profileUrl = getProfileUrl(token);
+
+    // 질문 내용 조회
+    const { text: questionText, category } = await Question.findById(questionId);
+
+    // 이메일 본문 생성
+    const html = questionEmail({ answerUrl, questionText, category, profileUrl });
+
+    // 메일 전송
+    await sendEmail({
+        to,
+        subject: '오늘의 질문이 도착했습니다!',
+        text: '오늘도 화이팅!',
+        html
+    });
+}
+
+/**
  * 구독 환영 이메일을 보내는 함수
  * @param {Object} param0 - 이메일 전송 파라미터
  * @param {string} param0.to - 수신자 이메일 주소
-*/
+ */
 export async function sendWelcomeEmail({ to }) {
-    const html = welcomeEmail();
+    // 토큰 조회 및 URL 생성
+    const token = await getTokenByEmail(to);
+    const profileUrl = getProfileUrl(token);
 
-    const mailOptions = {
-        from: `"Myundo" <${process.env.EMAIL_USER}>`,
+    // 이메일 본문 생성
+    const html = welcomeEmail(profileUrl);
+
+    // 메일 전송
+    await sendEmail({
         to,
         subject: "구독이 완료되었습니다!",
         text: "구독 완료!",
         html
-    };
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log(`[메일 전송 완료] ${to}`);
-    } catch (error) {
-        console.error(`[메일 전송 실패] ${to}:`, error);
-    }
+    });
 }
