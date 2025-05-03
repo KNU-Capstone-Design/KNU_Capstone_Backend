@@ -1,7 +1,7 @@
-const Question = require('../models/questions');
+import { Question } from '../models/questions.js';
 
 // 질문 read
-exports.getAllQuestions = async (req, res) => {
+export const getAllQuestions = async (req, res) => {
   try {
     const questions = await Question.find();
     res.json(questions);
@@ -11,7 +11,7 @@ exports.getAllQuestions = async (req, res) => {
 };
 
 // 질문 create
-exports.createQuestion = async (req, res) => {
+export const createQuestion = async (req, res) => {
   try {
     const question = new Question(req.body);
     await question.save();
@@ -22,7 +22,7 @@ exports.createQuestion = async (req, res) => {
 };
 
 // 질문 update
-exports.updateQuestion = async (req, res) => {
+export const updateQuestion = async (req, res) => {
   try {
     const updated = await Question.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updated);
@@ -32,7 +32,7 @@ exports.updateQuestion = async (req, res) => {
 };
 
 // 질문 delete
-exports.deleteQuestion = async (req, res) => {
+export const deleteQuestion = async (req, res) => {
   try {
     await Question.findByIdAndDelete(req.params.id);
     res.json({ message: '질문 삭제 완료' });
