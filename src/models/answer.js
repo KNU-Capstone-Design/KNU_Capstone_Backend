@@ -29,9 +29,9 @@ const answerSchema = new Schema({
 
     // AI 피드백
     score: { type: Number, default: 0 },
-    strengths: { type: String },
-    improvements: { type: String },
-    wrongPoints: { type: String },
+    strengths: { type: [String], default: [] },       // 잘한 점
+    improvements: { type: [String], default: [] },    // 고칠 점
+    wrongPoints: { type: [String], default: [] },      // 부족한 점
 
     // 상태값
     isFinal: { type: Boolean, default: true },

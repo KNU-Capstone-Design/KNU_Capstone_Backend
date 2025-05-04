@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Capstone
   version: 1.0.1
-  description: 완전한 RESTful 원칙에 기반한 이메일 구독 등록, 해지 및 문제/답변/체점 API입니다.
+  description: RESTful 원칙에 기반한 이메일 구독 등록, 해지 및 문제/답변/체점 API입니다.
 
 tags:
   - name: Subscribe
@@ -293,12 +293,12 @@ paths:
                       type: string
                       example: 서버 오류
 
-  /api/answers:
+  /api/answers/{questionId}:
     post:
       tags:
         - Answers
       summary: 사용자 답변 제출
-      description: 사용자가 받은 문제에 대한 답변을 제출합니다. 답변은 500자 이내로 받아야 하며 토큰 인증이 필요합니다.
+      description: 사용자가 받은 문제에 대한 답변을 제출합니다. 답변은 500자 이내로 받아야하고 Res로 피드백 결과가 리턴됩니다.
       security:
         - bearerAuth: []
       requestBody:
@@ -311,12 +311,9 @@ paths:
                 - questionId
                 - answer
               properties:
-                questionId:
-                  type: string
-                  example: q001
                 answer:
                   type: string
-                  example: "function solution() { return true; }"
+                  example: "BFS(Breadth-First Search)와 DFS(Depth-First Search)는 그래프 또는 트리 구조에서 데이터를 탐색하는 두 가지 기본 알고리즘입니다."
       responses:
         '200':
           description: 답변 제출 완료
@@ -325,9 +322,21 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
-                    example: 답변 제출 완료
+                  score:
+                    type: integer
+                    example: 100
+                  strengths:
+                    type: array
+                    example: [ 'BFS와 DFS의 정의를 정확하게 설명했습니다.',
+                               '각 알고리즘이 사용하는 자료구조(큐, 스택 또는 재귀 함수)를 언급하여 구현 방법을 이해하기 쉽게 했습니다.',
+                               '두 알고리즘의 주요 차이점을 간결하게 요약했습니다.']
+                  improvements:
+                    type: array
+                    example: []
+                  wrongPoints:
+                    type: array
+                    example: []
+
         '400':
           description: 답변 제출 실패
           content:

@@ -1,21 +1,21 @@
-import { returnFeedBack } from "/src/services/answerService.js";
+import { returnFeedBack } from "../services/answerService.js";
 
 // 답변 제출을 처리하는 컨트롤러
 export const requestAnswer = async (req, res) => {
     try {
-        const { questionID, answer } = req.body;
-        const result = await returnFeedBack(questionID, answer);
+        const { questionId } = req.params;
+        const { answer } = req.body;
+        const result = await returnFeedBack(questionId, answer);
         if (!result) {
             return res.status(400).json({
                 message: "답변 제출 실패"
             });
         }
-        return res.status(200).json({
-            message: "답변 제출 완료"
-        });
+        return res.status(200).json(result);
 
     }
     catch (error) {
+        console.log(error);
         res.status(500).json({ error: 'Server error' });
     }
 }
