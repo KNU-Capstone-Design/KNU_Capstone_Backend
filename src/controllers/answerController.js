@@ -5,7 +5,8 @@ export const requestAnswer = async (req, res) => {
     try {
         const { questionId } = req.params;
         const { answer } = req.body;
-        const result = await returnFeedBack(questionId, answer);
+        const { email } = req.email;
+        const result = await returnFeedBack(email, questionId, answer);
         if (!result) {
             return res.status(400).json({
                 message: "답변 제출 실패"

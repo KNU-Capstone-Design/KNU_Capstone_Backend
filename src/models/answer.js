@@ -35,6 +35,7 @@ const answerSchema = new Schema({
 
     // 상태값
     isFinal: { type: Boolean, default: true },
+    // 모르겠어요 버튼을 통해 답변을 받는 경우
     revealedAnswer: { type: Boolean, default: false }
 }, {
     timestamps: true,  // createdAt, updatedAt 자동생성

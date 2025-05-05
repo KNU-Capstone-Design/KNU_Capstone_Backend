@@ -21,17 +21,20 @@ const test = async () => {
 const dbTest = async () => {
     //const question = await Question.find( { category: "Backend"});
     //console.log(question);
-    const question2 = (await Question.findById("67f76e27cf776341c0c81408").select("text").lean()).text;
-    console.log(question2);
+    // const question2 = (await Question.findById("67f76e27cf776341c0c81408").select("text").lean()).text;
+    // console.log(question2);
+    const user = await User.findOne({email: "sunhokim28@gmail.com"}).select("_id");
+    const userId = user._id;
+    console.log(user);
+    console.log(userId);
 }
-
 const emailTest = async () => {
     // const questionID =  await selectQuestion('sunhokim28@gmail.com');
     // console.log(questionID);
     // const question = await Question.findById(questionID);
     // console.log(question.text);
     await sendQuestionEmail({ to: "sunhokim28@gmail.com" });
-    await sendWelcomeEmail({to: "sunhokim28@gmail.com" });
+    //await sendWelcomeEmail({to: "sunhokim28@gmail.com" });
 }
 
 const aiTest = async () => {
@@ -50,7 +53,7 @@ const aiTest = async () => {
     console.log(result);
     //console.log(aiAnswer);
 }
-aiTest();
+//aiTest();
 //emailTest();
-//dbTest();
+dbTest();
 //test();
