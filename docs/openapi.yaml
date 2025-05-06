@@ -297,187 +297,102 @@ paths:
     post:
       tags:
         - Answers
-      summary: 사용자 답변 제출
-      description: 사용자가 받은 문제에 대한 답변을 제출합니다. 답변은 500자 이내로 받아야하고 Res로 피드백 결과가 리턴됩니다.
-      security:
-        - bearerAuth: []
+      summary: 답변 제출 및 피드백 요청
+      description: 사용자가 입력한 답변에 대한 AI 피드백을 제공합니다
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 질문 ID
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - questionId
-                - answer
               properties:
                 answer:
                   type: string
-                  example: "BFS(Breadth-First Search)와 DFS(Depth-First Search)는 그래프 또는 트리 구조에서 데이터를 탐색하는 두 가지 기본 알고리즘입니다."
+                  description: 사용자 답변 내용
+              required:
+                - answer
       responses:
         '200':
-          description: 답변 제출 완료
+          description: 성공적으로 피드백 제공
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  score:
-                    type: integer
-                    example: 100
-                  strengths:
-                    type: array
-                    example: [ 'BFS와 DFS의 정의를 정확하게 설명했습니다.',
-                               '각 알고리즘이 사용하는 자료구조(큐, 스택 또는 재귀 함수)를 언급하여 구현 방법을 이해하기 쉽게 했습니다.',
-                               '두 알고리즘의 주요 차이점을 간결하게 요약했습니다.']
-                  improvements:
-                    type: array
-                    example: []
-                  wrongPoints:
-                    type: array
-                    example: []
-
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      score:
+                        type: number
+                        example: 80
+                      strengths:
+                        type: array
+                        items:
+                          type: string
+                        example: ["BFS와 DFS의 정의를 정확하게 설명했습니다."]
+                      improvements:
+                        type: array
+                        items:
+                          type: string
+                        example: ["시간 복잡도에 대한 설명을 추가하면 좋겠습니다."]
+                      wrongPoints:
+                        type: array
+                        items:
+                          type: string
+                        example: []
+                  message:
+                    type: string
+                    example: "답변 평가가 완료되었습니다."
         '400':
-          description: 답변 제출 실패
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: 답변 제출 실패          
-        '401':
-          description: 인증 오류
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: 인증 오류
+          description: 잘못된 요청
         '500':
           description: 서버 오류
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: 서버 오류
 
+  /api/answers/reveal/{questionId}:
     get:
       tags:
         - Answers
-      summary: 사용자 문제 풀이 결과 조회
-      description: 사용자가 제출한 답변 이력을 조회합니다. 토큰으로 판별되며, 별도의 쿼리는 필요하지 않습니다.
-      security:
-        - bearerAuth: []
+      summary: 모범 답안 요청
+      description: 모르겠어요 버튼 클릭 시 AI가 생성한 모범 답안을 제공합니다.
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 질문 ID
       responses:
         '200':
-          description: 문제 풀이 결과 목록
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    questionId:
-                      type: string
-                    answer:
-                      type: string
-                    score:
-                      type: number
-                    feedback:
-                      type: string
-        '401':
-          description: 인증 오류
+          description: 성공적으로 모범 답안 제공
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
-                    type: string
-                    example: 인증 오류
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      answer:
+                        type: string
+                        example: "BFS(너비 우선 탐색)와 DFS(깊이 우선 탐색)는..."
+                      message:
+                        type: string
+                        example: "모범 답안이 제공되었습니다."
         '500':
           description: 서버 오류
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: 서버 오류
-
-  /api/answers/reveal:
-    post:
-      tags:
-        - Answers
-      summary: AI 기반 정답 요청 (모르겠어요 버튼)
-      description: 사용자가 문제에 대한 정답을 모르겠을 때 Groq API를 통해 정답을 요청합니다. 인증이 필요합니다.
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - questionId
-              properties:
-                questionId:
-                  type: string
-                  example: q001
-      responses:
-        '200':
-          description: 정답 제공 성공
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  questionId:
-                    type: string
-                    example: q001
-                  answer:
-                    type: string
-                    example: "function solution() { return true; }"
-        '401':
-          description: 인증 오류
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: 인증 오류
-        '404':
-          description: 질문을 찾을 수 없음
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: 질문을 찾을 수 없습니다.
-        '500':
-          description: 정답 생성 실패 (Grok API 오류 등)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: 정답 생성 중 오류가 발생했습니다.
 
   /api/answers/{answerId}/grade:
     post:
