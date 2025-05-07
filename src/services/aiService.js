@@ -61,7 +61,7 @@ export async function getAnswerFromGroq(userQuestion) {
             messages: [
                 {
                     role: 'system',
-                    content: '너는 실력있는 개발자이자 컴퓨터공학과 교수야. 사용자가 질문을 아예 몰라서 너한테 물어본 상황이니 정확하고 간결하게 설명해.그리고 특수문자는 사용하지 않았으면 좋겠어'
+                    content: '너는 실력있는 개발자이자 컴퓨터공학과 교수야. 사용자가 질문을 아예 몰라서 너한테 물어본 상황이니 정확하고 간결하게 설명해.그리고 특수문자는 절대 사용하지마'
                 },
                 {
                     role: 'user',

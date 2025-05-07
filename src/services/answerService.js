@@ -25,7 +25,7 @@ export async function returnFeedBack(email, questionId, userAnswer) {
         }
      */
     // DB에 사용자 답변 및 피드백 저장 (동기적으로 처리)
-        saveFeedbackToDatabase(getUid(email), questionId, userAnswer, result)
+        saveFeedbackToDatabase(await getUid(email), questionId, userAnswer, result)
         .catch(err => console.error('답변 저장 실패:', err));
         }  catch (error) {
         console.error('피드백 처리 중 오류:', error);
@@ -39,7 +39,7 @@ export async function returnAnswer(email, questionId) {
         const userQuestion = (await Question.findById(questionId).select("text").lean()).text;
         const result = await getAnswerFromGroq(userQuestion);
         // DB에 저장 (동기적으로 처리)
-        saveFeedbackToDatabase(getUid(email), questionId, "", result)
+        saveFeedbackToDatabase(await getUid(email), questionId, "", result)
             .catch(err => console.error('답변 저장 실패:', err));
 
     } catch (error) {
@@ -74,19 +74,20 @@ async function saveFeedbackToDatabase(userId, questionId, userAnswer, feedback) 
             const answerData = {
                 user: userId,
                 question: questionId,
-                category: activityCategory, 
-                answerText: userAnswer,
+                category: activityCategory,
+                answerText: userAnswer || "정답 요청",
                 // AI 피드백
                 score: feedback.score,
                 strengths: feedback.strengths,
                 improvements: feedback.improvements,
                 wrongPoints: feedback.wrongPoints,
-            };
-            
+            }
+
             // 빈 답변이면 "모르겠어요" 버튼을 누른 것으로 간주하고 revealedAnswer를 true로 설정
             if (userAnswer === "") {
                 answerData.revealedAnswer = true;
-            }
+                answerData.aiAnswer = feedback;
+            } 
             
             // 답변 저장
             const answer = new Answer(answerData);
