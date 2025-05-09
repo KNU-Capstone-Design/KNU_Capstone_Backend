@@ -1,6 +1,5 @@
 import express from 'express'
-import { redirectController } from "../controllers/redirectController.js";
-import {getInfo, patchInfo} from "../controllers/userCotroller.js";
+import {getInfo, patchInfo} from "../controllers/userController.js";
 import {validateToken} from "../middlewares/validateToken.js";
 
 const router = express.Router();
