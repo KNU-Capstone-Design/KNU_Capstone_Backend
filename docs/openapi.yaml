@@ -39,7 +39,7 @@ paths:
                 category:
                   type: array
                   format: array
-                  example: ["Network", "Backend"]
+                  example: [ "Network", "Backend" ]
       responses:
         '201':
           description: 구독 등록 완료
@@ -157,7 +157,7 @@ paths:
                     example: 'true'
                   category:
                     type: string
-                    example: ["Backend","Frontend"]
+                    example: [ "Backend","Frontend" ]
 
         '401':
           description: 인증 오류
@@ -199,7 +199,7 @@ paths:
                 category:
                   type: array
                   format: array
-                  example: ["Backend", "Frontend" ]
+                  example: [ "Backend", "Frontend" ]
       responses:
         '200':
           description: 구독 항목 변경 완료
@@ -234,64 +234,64 @@ paths:
                     example: 서버 오류
 
   /api/questions/{questionId}:
-      get:
-        tags:
-          - Questions
-        summary: 특정 질문 단건 조회
-        description: 이메일 링크에 포함된 questionId를 Path 파라미터로 받아 해당 질문의 카테고리와 본문을 반환합니다.쿼리에는 /뒤에 그대로 questionId쓰면됨.
-        security:
-          - bearerAuth: [ ]
-        parameters:
-          - in: path
-            name: questionId
-            required: true
-            schema:
-              type: string
-            description: 조회할 질문의 고유 ID
-        responses:
-          '200':
-            description: 질문 정보 조회 성공
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    category:
-                      type: string
-                      example: "OS"
-                    question:
-                      type: string
-                      example: "페이징에 대해 설명해주세요"
-          '401':
-            description: 인증 오류
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    error:
-                      type: string
-                      example: 인증 오류
-          '404':
-            description: 해당 ID의 질문 없음
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    error:
-                      type: string
-                      example: 질문을 찾을 수 없습니다.
-          '500':
-            description: 서버 오류
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    error:
-                      type: string
-                      example: 서버 오류
+    get:
+      tags:
+        - Questions
+      summary: 특정 질문 단건 조회
+      description: 이메일 링크에 포함된 questionId를 Path 파라미터로 받아 해당 질문의 카테고리와 본문을 반환합니다.쿼리에는 /뒤에 그대로 questionId쓰면됨.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: string
+          description: 조회할 질문의 고유 ID
+      responses:
+        '200':
+          description: 질문 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  category:
+                    type: string
+                    example: "OS"
+                  question:
+                    type: string
+                    example: "페이징에 대해 설명해주세요"
+        '401':
+          description: 인증 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 인증 오류
+        '404':
+          description: 해당 ID의 질문 없음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 질문을 찾을 수 없습니다.
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 서버 오류
 
   /api/answers/{questionId}:
     post:
@@ -326,33 +326,24 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      score:
-                        type: number
-                        example: 80
-                      strengths:
-                        type: array
-                        items:
-                          type: string
-                        example: ["BFS와 DFS의 정의를 정확하게 설명했습니다."]
-                      improvements:
-                        type: array
-                        items:
-                          type: string
-                        example: ["시간 복잡도에 대한 설명을 추가하면 좋겠습니다."]
-                      wrongPoints:
-                        type: array
-                        items:
-                          type: string
-                        example: []
-                  message:
-                    type: string
-                    example: "답변 평가가 완료되었습니다."
+                  score:
+                    type: number
+                    example: 80
+                  strengths:
+                    type: array
+                    items:
+                      type: string
+                    example: [ "BFS와 DFS의 정의를 정확하게 설명했습니다." ]
+                  improvements:
+                    type: array
+                    items:
+                      type: string
+                    example: [ "시간 복잡도에 대한 설명을 추가하면 좋겠습니다." ]
+                  wrongPoints:
+                    type: array
+                    items:
+                      type: string
+                    example: [ ]
         '400':
           description: 잘못된 요청
         '500':
@@ -373,24 +364,15 @@ paths:
           description: 질문 ID
       responses:
         '200':
-          description: 성공적으로 모범 답안 제공
+          description: 성공적으로 피드백 제공
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      answer:
-                        type: string
-                        example: "BFS(너비 우선 탐색)와 DFS(깊이 우선 탐색)는..."
-                      message:
-                        type: string
-                        example: "모범 답안이 제공되었습니다."
+                  answer:
+                    type: string
+                    example: "BFS(너비 우선 탐색)와 DFS(깊이 우선 탐색)는..."
         '500':
           description: 서버 오류
 
@@ -401,7 +383,7 @@ paths:
       summary: 특정 답변에 대한 AI 채점 요청
       description: 사용자가 제출한 특정 답변에 대해 Grok API를 통해 AI 채점을 수행합니다. 채점 결과는 점수와 피드백으로 구성되며, 이후 오답노트에 활용됩니다.
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - in: path
           name: answerId
@@ -470,7 +452,7 @@ paths:
       summary: 문제 다시 풀기
       description: 사용자가 이전에 푼 문제를 다시 선택하여 풀 수 있도록 기존 기록 위에 덮어씁니다. 토큰 인증이 필요합니다.
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: questionId
           in: path
