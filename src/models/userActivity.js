@@ -20,6 +20,10 @@ const userActivitySchema = new Schema({
         ref: 'Question',
         required: true
     },
+    aiAnswer: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Answer'
+    }],
     answers: [{
         type: Schema.Types.ObjectId,
         ref: 'Answer'

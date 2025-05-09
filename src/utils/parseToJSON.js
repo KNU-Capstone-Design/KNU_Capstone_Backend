@@ -41,3 +41,12 @@ export function parseFeedback(text) {
     }
     return result;
 }
+
+/*
+ AI가 반환한 정답을 JSON으로 파싱
+ */
+export function parseAnswer(text) {
+    return {
+        answer: text
+    };
+}

@@ -8,6 +8,6 @@ const router = express.Router();
 router.post('/:questionId', validateToken, requestAnswer);
 
 // POST /api/answers/reveal/{questionId} 요청시 라우팅
-router.post('/reveal/:questionId', validateToken, getAnswer)
+router.get('/reveal/:questionId', validateToken, getAnswer)
 
 export default router;
