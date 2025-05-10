@@ -19,12 +19,10 @@ export const requestAnswer = async (req, res) => {
         const result = await returnFeedBack(email, questionId, answer);
         
         return res.status(200).json({
-            data: {
                 score: result.score,
                 strengths: result.strengths,
                 improvements: result.improvements,
                 wrongPoints: result.wrongPoints
-            }
         });
     }
     catch (error) {

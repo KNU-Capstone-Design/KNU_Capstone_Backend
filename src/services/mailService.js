@@ -58,7 +58,7 @@ export async function sendQuestionEmail({ to }) {
 
     // 토큰 조회 및 URL 생성
     const token = await getTokenByEmail(to);
-    const answerUrl = `${process.env.SERVER_URL}/verify?token=${token}&question=${questionId}&redirect=answer`;
+    const answerUrl = `${process.env.SERVER_URL}/verify?token=${token}&question=${questionId}&redirect=Quiz`;
     const profileUrl = getProfileUrl(token);
 
     // 질문 내용 조회
