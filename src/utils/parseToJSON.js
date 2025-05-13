@@ -17,12 +17,12 @@ export function parseFeedback(text) {
     }
 
     // 섹션 분리
-    const sections = text.split(/(잘한 점:|부족한 점:|고칠 점:)/).map(s => s.trim());
+    const sections = text.split(/(잘한 점:|부족한 점:|틀린 점:)/).map(s => s.trim());
 
     const keyMap = {
         "잘한 점:": "strengths",
         "부족한 점:": "improvements",
-        "고칠 점:": "wrongPoints"
+        "틀린 점:": "wrongPoints"
     };
 
     for (let i = 0; i < sections.length; i++) {
