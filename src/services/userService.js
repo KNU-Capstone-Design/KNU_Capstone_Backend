@@ -9,7 +9,7 @@ export async function getUserInfo(email) {
     try {
         return await User
             .find({ email })
-            .select({ subscriptionStatus: 1, categories: 1, _id: 0 })
+            .select({ email: 1, subscriptionStatus: 1, categories: 1, _id: 0 })
             .lean();
     }
     catch (error) {

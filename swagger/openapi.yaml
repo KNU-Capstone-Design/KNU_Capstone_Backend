@@ -152,6 +152,9 @@ paths:
               schema:
                 type: object
                 properties:
+                  email:
+                    type: string
+                    example: temp@temp.com
                   subscriptionStatus:
                     type: boolean
                     example: 'true'
