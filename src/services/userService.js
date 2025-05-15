@@ -30,9 +30,16 @@ export async function patchUserInfo(email, category) {
         if (category.includes("Backend")) {
             category.push("Java");
         }
+        else if(category.includes("Java")) {
+            category.pop("Java")
+        }
         if (category.includes("Frontend")) {
             category.push("JavaScript");
         }
+        else if(category.includes("JavaScript")) {
+            category.pop("JavaScript")
+        }
+
         return await User.findOneAndUpdate(
             { email },
             { categories: category }
