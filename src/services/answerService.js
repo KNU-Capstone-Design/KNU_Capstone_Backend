@@ -5,6 +5,7 @@ import { parseFeedback } from "../utils/parseToJSON.js";
 import Answer from "../models/answer.js";
 import { UserActivity } from "../models/userActivity.js";
 import User from "../models/users.js";
+import { updateUserStreak } from "./userService.js";
 
 /*
     사용자가 답변을 입력하거나 정답 요청을 했을때의 비지니스 로직
