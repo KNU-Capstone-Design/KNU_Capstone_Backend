@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
     }],
     // 사용자의 구독 상태 (구독 중이면 true)
     subscriptionStatus: { type: Boolean, default: true },
+    // 몇일 연속으로 문제를 해결했는지를 기록
+    streak: { 
+        current: { type: Number, default: 0 },
+        lastSolvedDate: { type: Date, default: null },
+    },
     /*
        CS 질문, 기술스택 질문을 교차로 보내기 위한 유저별 인덱스 저장
     */

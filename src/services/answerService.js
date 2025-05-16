@@ -20,7 +20,6 @@ async function getUid(email) {
     return user._id;
 }
 
-
 // 사용자가 입력한 답변을 채점하고 DB에 저장후 반환
 export async function returnFeedBack(email, questionId, userAnswer) {
     try {
@@ -125,6 +124,7 @@ export async function returnAnswer(email, questionId) {
 async function saveFeedbackToDatabase(userId, questionId, userAnswer, feedback) {
     const session = await mongoose.startSession();
     session.startTransaction();
+    updateUserStreak(email).catch(err => console.error('스트릭 업데이트 실패:', err));
     try {
         // category 조회
         const category = await getActivityCategory(userId, questionId, session);
