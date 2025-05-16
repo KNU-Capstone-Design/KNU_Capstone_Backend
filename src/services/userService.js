@@ -53,13 +53,13 @@ export async function patchUserInfo(email, category) {
 
 /**
  * 사용자의 연속 풀이 일수 업데이트
- * @param {string} email - 사용자 이메일
  * @returns {Object|null} - 업데이트된 streak 정보 또는 실패 시 null
+ * @param userId
  */
-export async function updateUserStreak(email) {
+export async function updateUserStreak(userId) {
     try {
         // 사용자 찾기
-        const user = await User.findOne({ email });
+        const user = await User.findById(userId);
         if (!user) {
             console.error(`사용자를 찾을 수 없습니다: ${email}`);
             return null;
