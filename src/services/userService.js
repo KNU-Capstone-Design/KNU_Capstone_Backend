@@ -64,25 +64,25 @@ export async function updateUserStreak(userId, session) {
             console.error(`사용자를 찾을 수 없습니다: ${email}`);
             return null;
         }
-
         // 날짜 정보 준비
         const today = getKSTDateString(0);
         const yesterday = getKSTDateString(-1);
+        const lastSolvedDate = user.streak.lastSolvedDate.toISOString().slice(0,10);
 
         // streak 로직 구현
         // 첫 풀이인 경우
-        if (!user.streak || !user.streak.lastSolvedDate) {
+        if (!user.streak || lastSolvedDate) {
             user.streak = {
                 current: 1,
                 lastSolvedDate: today
             };
         }
         // 이미 오늘 풀었으면 변경 없음
-        else if (user.streak.lastSolvedDate === today) {
+        else if (lastSolvedDate === today) {
             return user.streak; // 이미 업데이트됨, 변경 없음
         }
         // 어제 풀었으면 streak 증가
-        else if (user.streak.lastSolvedDate === yesterday) {
+        else if (lastSolvedDate === yesterday) {
             user.streak.current += 1;
             user.streak.lastSolvedDate = today;
         }
