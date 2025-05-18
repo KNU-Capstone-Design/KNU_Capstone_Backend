@@ -125,7 +125,7 @@ export async function returnAnswer(email, questionId) {
 async function saveFeedbackToDatabase(userId, questionId, userAnswer, feedback) {
     const session = await mongoose.startSession();
     session.startTransaction();
-    updateUserStreak(userId).catch(err => console.error('스트릭 업데이트 실패:', err));
+    await updateUserStreak(userId,session).catch(err => console.error('스트릭 업데이트 실패:', err));
     try {
         // category 조회
         const category = await getActivityCategory(userId, questionId, session);
