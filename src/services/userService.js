@@ -53,7 +53,7 @@ export async function patchUserInfo(email, category) {
 
 /**
  * 사용자의 연속 풀이 일수 업데이트
- * @returns {Object|null} - 업데이트된 streak 정보 또는 실패 시 null
+ * @returns {Object|null} - 업데  이트된 streak 정보 또는 실패 시 null
  * @param userId
  */
 export async function updateUserStreak(userId, session) {
@@ -71,7 +71,7 @@ export async function updateUserStreak(userId, session) {
 
         // streak 로직 구현
         // 첫 풀이인 경우
-        if (!user.streak || lastSolvedDate) {
+        if (!user.streak || !lastSolvedDate) {
             user.streak = {
                 current: 1,
                 lastSolvedDate: today
