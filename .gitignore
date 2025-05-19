@@ -321,3 +321,6 @@ $RECYCLE.BIN/
 .env.local
 .env.production
 .env.development
+
+#test파일 제외
+src/test.js

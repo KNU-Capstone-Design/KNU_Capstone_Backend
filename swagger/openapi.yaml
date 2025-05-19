@@ -2,13 +2,15 @@ openapi: 3.0.0
 info:
   title: Capstone
   version: 1.0.1
-  description: 완전한 RESTful 원칙에 기반한 이메일 구독 등록, 해지 및 문제/답변/체점 API입니다.
+  description: RESTful 원칙에 기반한 이메일 구독 등록, 해지 및 문제/답변/체점 API입니다.
 
 tags:
   - name: Subscribe
     description: 이메일 구독 등록 및 해지
   - name: Users
     description: 사용자 정보 수정 및 조회
+  - name: Questions
+    description: 질문 정보 조회
   - name: Answers
     description: 사용자 답변 제출 및 이력 조회
   - name: Auth
@@ -38,7 +40,7 @@ paths:
                 category:
                   type: array
                   format: array
-                  example: ["Network", "Backend"]
+                  example: [ "Network", "Backend" ]
       responses:
         '201':
           description: 구독 등록 완료
@@ -232,12 +234,15 @@ paths:
               schema:
                 type: object
                 properties:
+                  email:
+                    type: string
+                    example: temp@temp.com
                   subscriptionStatus:
                     type: boolean
                     example: 'true'
                   category:
                     type: string
-                    example: ["Backend","Frontend"]
+                    example: [ "Backend","Frontend" ]
 
         '401':
           description: 인증 오류
@@ -279,7 +284,7 @@ paths:
                 category:
                   type: array
                   format: array
-                  example: ["Backend", "Frontend" ]
+                  example: [ "Backend", "Frontend" ]
       responses:
         '200':
           description: 구독 항목 변경 완료
@@ -313,142 +318,35 @@ paths:
                     type: string
                     example: 서버 오류
 
-  /api/answers:
-    post:
-      tags:
-        - Answers
-      summary: 사용자 답변 제출
-      description: 사용자가 받은 문제에 대한 답변을 제출합니다. 답변은 500자 이내로 받아야 하며 토큰 인증이 필요합니다.
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - questionId
-                - answer
-              properties:
-                questionId:
-                  type: string
-                  example: q001
-                answer:
-                  type: string
-                  example: "function solution() { return true; }"
-      responses:
-        '200':
-          description: 답변 제출 완료
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 답변 제출 완료
-        '401':
-          description: 인증 오류
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: 인증 오류
-        '500':
-          description: 서버 오류
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: 서버 오류
-
+  /api/questions/{questionId}:
     get:
       tags:
-        - Answers
-      summary: 사용자 문제 풀이 결과 조회
-      description: 사용자가 제출한 답변 이력을 조회합니다. 토큰으로 판별되며, 별도의 쿼리는 필요하지 않습니다.
+        - Questions
+      summary: 특정 질문 단건 조회
+      description: 이메일 링크에 포함된 questionId를 Path 파라미터로 받아 해당 질문의 카테고리와 본문을 반환합니다.쿼리에는 /뒤에 그대로 questionId쓰면됨.
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: string
+          description: 조회할 질문의 고유 ID
       responses:
         '200':
-          description: 문제 풀이 결과 목록
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    questionId:
-                      type: string
-                    answer:
-                      type: string
-                    score:
-                      type: number
-                    feedback:
-                      type: string
-        '401':
-          description: 인증 오류
+          description: 질문 정보 조회 성공
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  category:
                     type: string
-                    example: 인증 오류
-        '500':
-          description: 서버 오류
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
+                    example: "OS"
+                  question:
                     type: string
-                    example: 서버 오류
-
-  /api/answers/reveal:
-    post:
-      tags:
-        - Answers
-      summary: AI 기반 정답 요청 (모르겠어요 버튼)
-      description: 사용자가 문제에 대한 정답을 모르겠을 때 Groq API를 통해 정답을 요청합니다. 인증이 필요합니다.
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - questionId
-              properties:
-                questionId:
-                  type: string
-                  example: q001
-      responses:
-        '200':
-          description: 정답 제공 성공
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  questionId:
-                    type: string
-                    example: q001
-                  answer:
-                    type: string
-                    example: "function solution() { return true; }"
+                    example: "페이징에 대해 설명해주세요"
         '401':
           description: 인증 오류
           content:
@@ -460,7 +358,7 @@ paths:
                     type: string
                     example: 인증 오류
         '404':
-          description: 질문을 찾을 수 없음
+          description: 해당 ID의 질문 없음
           content:
             application/json:
               schema:
@@ -470,7 +368,7 @@ paths:
                     type: string
                     example: 질문을 찾을 수 없습니다.
         '500':
-          description: 정답 생성 실패 (Grok API 오류 등)
+          description: 서버 오류
           content:
             application/json:
               schema:
@@ -478,7 +376,99 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: 정답 생성 중 오류가 발생했습니다.
+                    example: 서버 오류
+
+  /api/answers/{questionId}:
+    post:
+      tags:
+        - Answers
+      summary: 답변 제출 및 피드백 요청
+      description: 사용자가 입력한 답변에 대한 AI 피드백을 제공합니다
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 질문 ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                answer:
+                  type: string
+                  description: 사용자 답변 내용
+              required:
+                - answer
+      responses:
+        '200':
+          description: 성공적으로 피드백 제공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  score:
+                    type: number
+                    example: 80
+                  strengths:
+                    type: array
+                    items:
+                      type: string
+                    example: [ "BFS와 DFS의 정의를 정확하게 설명했습니다." ]
+                  improvements:
+                    type: array
+                    items:
+                      type: string
+                    example: [ "시간 복잡도에 대한 설명을 추가하면 좋겠습니다." ]
+                  wrongPoints:
+                    type: array
+                    items:
+                      type: string
+                    example: [ ]
+        '400':
+          description: 잘못된 요청
+        '500':
+          description: 서버 오류
+
+  /api/answers/reveal/{questionId}:
+    get:
+      tags:
+        - Answers
+      summary: 모범 답안 요청
+      description: 모르겠어요 버튼 클릭 시 AI가 생성한 모범 답안을 제공합니다.
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 질문 ID
+      responses:
+        '200':
+          description: 성공적으로 피드백 제공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    example: "알고리즘은 특정 문제를 해결하기 위한 단계적 절차 또는 공식입니다."
+                  explanation:
+                    type: string
+                    example: "알고리즘은 입력 데이터를 받아 처리하여 원하는 출력을 생성하는 일련의 명령어 집합으로 구성됩니다. 효율적인 알고리즘은 문제 해결 시간을 단축시키고, 컴퓨터 자원을 절약할 수 있습니다."
+                  example:
+                    type: string
+                    example: "요리 레시피: 특정 요리를 만들기 위한 재료 준비 및 조리 순서를 단계적으로 설명한 것 길 찾기: 지도 앱에서 출발지와 목적지를 입력하면 최적의 경로를 안내해 주는 것"
+                  notes:
+                    type: string
+                    example: "알고리즘은 컴퓨터 과학뿐만 아니라 일상생활의 다양한 문제 해결에 활용될 수 있습니다. 알고리즘의 정확성과 효율성은 문제 해결의 질을 결정짓는 중요한 요소입니다."
+        '500':
+          description: 서버 오류
 
   /api/answers/{answerId}/grade:
     post:
@@ -487,7 +477,7 @@ paths:
       summary: 특정 답변에 대한 AI 채점 요청
       description: 사용자가 제출한 특정 답변에 대해 Grok API를 통해 AI 채점을 수행합니다. 채점 결과는 점수와 피드백으로 구성되며, 이후 오답노트에 활용됩니다.
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - in: path
           name: answerId
@@ -556,7 +546,7 @@ paths:
       summary: 문제 다시 풀기
       description: 사용자가 이전에 푼 문제를 다시 선택하여 풀 수 있도록 기존 기록 위에 덮어씁니다. 토큰 인증이 필요합니다.
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: questionId
           in: path

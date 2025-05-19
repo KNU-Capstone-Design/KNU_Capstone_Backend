@@ -1,4 +1,5 @@
 import User from "../models/users.js";
+import { getKSTDateString } from "../utils/date.js"
 
 /**
  * DB에서 사용자 정보(구독 상태, 구독한 카테고리)를 조회하는 비지니스 로직
@@ -9,7 +10,7 @@ export async function getUserInfo(email) {
     try {
         return await User
             .find({ email })
-            .select({ subscriptionStatus: 1, categories: 1, _id: 0 })
+            .select({ email: 1, subscriptionStatus: 1, categories: 1, _id: 0 })
             .lean();
     }
     catch (error) {
@@ -30,9 +31,16 @@ export async function patchUserInfo(email, category) {
         if (category.includes("Backend")) {
             category.push("Java");
         }
+        else if(category.includes("Java")) {
+            category.pop("Java")
+        }
         if (category.includes("Frontend")) {
             category.push("JavaScript");
         }
+        else if(category.includes("JavaScript")) {
+            category.pop("JavaScript");
+        }
+
         return await User.findOneAndUpdate(
             { email },
             { categories: category }
@@ -40,5 +48,57 @@ export async function patchUserInfo(email, category) {
     }
     catch (error) {
         console.error("[사용자 정보 변경 실패]", error);
+    }
+}
+
+/**
+ * 사용자의 연속 풀이 일수 업데이트
+ * @returns {Object|null} - 업데이트된 streak 정보 또는 실패 시 null
+ * @param userId
+ */
+export async function updateUserStreak(userId, session) {
+    try {
+        // 사용자 찾기
+        const user = await User.findById(userId).session(session);
+        if (!user) {
+            console.error(`사용자를 찾을 수 없습니다: ${email}`);
+            return null;
+        }
+
+        // 날짜 정보 준비
+        const today = getKSTDateString(0);
+        const yesterday = getKSTDateString(-1);
+
+        // streak 로직 구현
+        // 첫 풀이인 경우
+        if (!user.streak || !user.streak.lastSolvedDate) {
+            user.streak = {
+                current: 1,
+                lastSolvedDate: today
+            };
+        }
+        // 이미 오늘 풀었으면 변경 없음
+        else if (user.streak.lastSolvedDate === today) {
+            return user.streak; // 이미 업데이트됨, 변경 없음
+        }
+        // 어제 풀었으면 streak 증가
+        else if (user.streak.lastSolvedDate === yesterday) {
+            user.streak.current += 1;
+            user.streak.lastSolvedDate = today;
+        }
+        // 그 외 (이틀 이상 지남) - streak 리셋
+        else {
+            user.streak.current = 1;
+            user.streak.lastSolvedDate = today;
+        }
+
+        // DB 업데이트
+        user.$session(session);
+        await user.save();
+
+        return user.streak;
+    } catch (error) {
+        console.error("[스트릭 업데이트 실패]", error);
+        return null;
     }
 }

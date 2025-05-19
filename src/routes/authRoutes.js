@@ -4,6 +4,7 @@ import { redirectController } from "../controllers/redirectController.js";
 
 const router = express.Router();
 
+// POST /api/auth/verify 요청시 라우팅
 router.post("/verify", verifyTokenAndSetCookie);
 
 // GET /api/auth/redirect? 요청시 라우팅

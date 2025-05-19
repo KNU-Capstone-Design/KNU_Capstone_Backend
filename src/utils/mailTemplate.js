@@ -1,9 +1,9 @@
 // 이메일 HTML 템플릿 작성
 
 // 질문 발송 이메일
-export function questionEmail({ answerUrl, questionText }) {
+export function questionEmail({ answerUrl, questionText, category, profileUrl }) {
     return `
-   <head>
+  <head>
     <meta charset="UTF-8">
   </head>
   <body style="margin: 0; padding: 0; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background-color: #ffffff;">
@@ -15,10 +15,13 @@ export function questionEmail({ answerUrl, questionText }) {
         </td>
       </tr>
 
-      <!-- 질문-->
+      <!-- 질문 -->
       <tr>
         <td style="border: 1px solid #dbe5ff; border-radius: 20px; padding: 20px; text-align: center; font-size: 15px; line-height: 1.8; color: #000000;">
           <div style="font-size: 20px; font-weight: bold; margin-bottom: 16px; color: #5B9CFE">오늘의 질문</div>
+          <div style="font-size: 13px; color: #5B9CFE; font-weight: bold; margin-bottom: 10px;">
+            💡 <span style="color: #5B9CFE;">${category}</span>에 관련된 질문이에요
+          </div>
           <div style="font-size: 14px;">
             ${questionText}
           </div>
@@ -33,14 +36,14 @@ export function questionEmail({ answerUrl, questionText }) {
               <td width="33%"></td>
               <td width="34%" align="center" style="text-align: center;">
                 <!-- 답변하기 버튼 -->
-                <a href=${answerUrl}
+                <a href="${answerUrl}"
                    style="display: inline-block; padding: 10px 16px; background-color: #5B9CFE; color: white; font-size: 0.9rem; border-radius: 6px; font-weight: bold; text-decoration: none;">
                   답변하기
                 </a>
               </td>
               <td width="33%" align="right">
                 <!-- 내 정보 버튼 -->
-                <a href="내정보 링크"
+                <a href="${profileUrl}"
                    style="display: inline-block; border: 1px solid #dbe5ff; border-radius: 12px; padding: 8px; text-align: center; text-decoration: none;">
                   <div style="font-size: 18px;">👤</div>
                   <div style="font-size: 12px; color: #000000;">내 정보</div>
@@ -56,7 +59,7 @@ export function questionEmail({ answerUrl, questionText }) {
 }
 
 // 처음 가입시 발송하는 환영 이메일
-export function welcomeEmail() {
+export function welcomeEmail(profileUrl) {
     return `
         <head>
         <meta charset="UTF-8">
@@ -89,7 +92,7 @@ export function welcomeEmail() {
                     <tr>
                         <td width="33%" align="right">
                             <!-- 내 정보 버튼 -->
-                            <a href="내정보 링크"
+                            <a href="${profileUrl}"
                                style="display: inline-block; border: 1px solid #dbe5ff; border-radius: 12px; padding: 8px; text-align: center; text-decoration: none;">
                                 <div style="font-size: 18px;">👤</div>
                                 <div style="font-size: 12px; color: #000000;">내 정보</div>

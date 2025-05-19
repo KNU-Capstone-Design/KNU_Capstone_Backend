@@ -12,69 +12,106 @@ import { Question } from "../models/questions.js";
 import { CS_CATEGORY } from "../config/constants.js";
 
 export async function selectQuestion(email) {
-    // 사용자 정보 및 이메일 발송 스케줄, 구독 카테고리 조회
-    const user = await User.findOne({ email }).select('emailSchedule categories');
+    // 사용자 정보 조회 - email 인덱스 활용
+    const user = await User.findOne({ email })
+        .select('emailSchedule categories')
+        .lean(); // lean() 사용하여 메모리 최적화
+
     if (!user || user.emailSchedule.length === 0) return null;
 
     const schedule = user.emailSchedule[0];
     const categories = user.categories;
 
-    let nextQuestion = null;
-    let selectedCategory = null;
+    // 카테고리 선택 및 스케줄 설정 부분 - 분리하여 코드 명확성 향상
+    const { selectedCategory, groupType, indexField, nextIndex } = selectCategoryAndGroup(schedule, categories);
 
-    // 이전에 CS 질문을 발송했다면 이번엔 TECH 발송
+    // 이미 발송한 질문 ID 조회 - {user, category} 복합 인덱스 활용
+    const sentQuestionIds = await UserActivity.find({
+        user: user._id,
+        category: selectedCategory
+    })
+        .distinct('question')
+        .lean();
+
+    // 발송할 새로운 질문 조회 최적화
+    const nextQuestion = await findNextQuestion(selectedCategory, sentQuestionIds);
+
+    if (!nextQuestion) return null; // 발송할 질문이 없는 경우
+
+    // 스케줄 업데이트 및 활동 기록
+    await updateUserScheduleAndActivity(user._id, schedule, groupType, indexField, nextIndex, selectedCategory, nextQuestion._id);
+
+    return nextQuestion._id; // 질문의 UID 반환
+}
+
+/**
+ * 카테고리 선택 및 스케줄 그룹 설정
+ */
+function selectCategoryAndGroup(schedule, categories) {
     if (schedule.lastGroupType === "CS") {
-        // 다음에 보낼 질문의 인덱스 선택
+        // TECH 질문 선택
         const nextIndex = (schedule.lastTECHIndex + 1) % categories.length;
-        selectedCategory = categories[nextIndex];
-        // 이미 발송한 질문 목록 조회
-        const sentQuestionIds = await UserActivity.find({ user: user._id,  category: selectedCategory }).distinct('question');
-        // 중복 질문 방지
-        nextQuestion = await Question.findOne({
-            category: selectedCategory,
-            _id: { $nin: sentQuestionIds }
-        });
-        // 다음 질문이 있다면 스케줄 갱신
-        if (nextQuestion) {
-            schedule.lastGroupType = "TECH";
-            schedule.lastTECHIndex = nextIndex;
-        }
+        return {
+            selectedCategory: categories[nextIndex],
+            groupType: "TECH",
+            indexField: "lastTECHIndex",
+            nextIndex
+        };
     } else {
-        // 이전에 TECH 질문을 발송했다면 이번엔 CS 발송
+        // CS 질문 선택
         const nextIndex = (schedule.lastCSIndex + 1) % CS_CATEGORY.length;
-        selectedCategory = CS_CATEGORY[nextIndex];
-        // 이미 발송한 질문 목록 조회
-        const sentQuestionIds = await UserActivity.find({ user: user._id,  category: selectedCategory }).distinct('question');
+        return {
+            selectedCategory: CS_CATEGORY[nextIndex],
+            groupType: "CS",
+            indexField: "lastCSIndex",
+            nextIndex
+        };
+    }
+}
 
-        nextQuestion = await Question.findOne({
-            category: selectedCategory,
+/**
+ * 다음 질문 찾기 - 최적화된 버전
+ * 카테고리 인덱스와 _id 기본 인덱스 활용
+ */
+async function findNextQuestion(category, sentQuestionIds) {
+    // 이미 발송된 질문 수에 따라 다른 쿼리 전략 사용
+    if (sentQuestionIds.length > 500) {
+        // 질문이 많이 발송된 경우 랜덤 샘플링 방식 사용
+        const randomQuestions = await Question.aggregate([
+            { $match: { category: category } },
+            { $match: { _id: { $nin: sentQuestionIds } } },
+            { $sample: { size: 1 } }
+        ]);
+        return randomQuestions.length > 0 ? randomQuestions[0] : null;
+    } else {
+        // 일반적인 경우 표준 쿼리 사용
+        return await Question.findOne({
+            category: category,
             _id: { $nin: sentQuestionIds }
-        });
+        }).lean();
+    }
+}
 
-        // 다음 질문이 있다면 스케줄 갱신
-        if (nextQuestion) {
-            schedule.lastGroupType = "CS";
-            schedule.lastCSIndex = nextIndex;
+/**
+ * 사용자 스케줄 업데이트 및 활동 기록 생성
+ */
+async function updateUserScheduleAndActivity(userId, schedule, groupType, indexField, nextIndex, category, questionId) {
+    // 스케줄 업데이트 - 트랜잭션으로 묶을 수도 있음
+    await User.updateOne(
+        { _id: userId },
+        {
+            $set: {
+                "emailSchedule.0.lastGroupType": groupType,
+                [`emailSchedule.0.${indexField}`]: nextIndex
+            }
         }
-    }
+    );
 
-    // 질문을 찾았으면 스케줄 저장 + 활동 기록 추가
-    if (nextQuestion) {
-        // schedule은 nested document이므로 변경 표시 필요할 수 있음
-        user.markModified('emailSchedule');
-        await user.save();
-
-        // UserAcitivity 컬랙션에 발송한 질문에 대한 정보 저장
-        await new UserActivity({
-            user: user._id,
-            question: nextQuestion._id,
-            category: selectedCategory,
-            answers: []
-        }).save();
-
-        return nextQuestion._id; // 질문의 UID 반환
-    }
-
-    // 더 이상 보낼 질문이 없는 경우
-    return null;
+    // UserActivity 생성 - 인덱싱된 필드를 먼저 지정
+    await UserActivity.create({
+        user: userId,
+        category: category,
+        question: questionId,
+        answers: []
+    });
 }
