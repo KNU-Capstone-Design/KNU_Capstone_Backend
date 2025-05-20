@@ -11,8 +11,10 @@ tags:
     description: 사용자 정보 수정 및 조회
   - name: Questions
     description: 질문 정보 조회
+  - name: Activities
+    description: 사용자 문제풀이 정보 조회
   - name: Answers
-    description: 사용자 답변 제출 및 이력 조회
+    description: 사용자 답변 제출
   - name: Auth
     description: 이메일 기반 인증 처리
 
@@ -136,34 +138,28 @@ paths:
                   error:
                     type: string
                     example: 서버 오류
-                    
-  /api/questions:
+
+  /api/activities/page={page}&limit={limit}:
     get:
       tags:
-        - questions
+        - Activities
       summary: 질문 리스트 조회 – 페이지네이션
-      description: 사용자가 풀었던 CS 면접 질문 리스트 조회하기. 기본은 15 limit 
+      description: 사용자가 풀었던 CS 면접 질문 리스트 조회하기. 기본은 10 limit
       parameters:
         - name: page
           in: query
-          description: 페이지 번호 
+          description: 페이지 번호
           required: false
           schema:
             type: integer
             default: 1
         - name: limit
           in: query
-          description: 페이지당 항목 수 
+          description: 페이지당 항목 수
           required: false
           schema:
             type: integer
-            default: 15
-        - name: category
-          in: query
-          description: 필터링할 카테고리 이름
-          required: false
-          schema:
-            type: string
+            default: 10
       responses:
         '200':
           description: 성공
@@ -195,15 +191,18 @@ paths:
                         _id:
                           type: string
                           description: 질문 ID
+                        date:
+                          type: string
+                          description: 질문 발송 날짜
                         title:
                           type: string
                           description: 질문 제목
                         category:
                           type: string
                           description: 질문 카테고리
-                        content:
-                          type: string
-                          description: 질문 내용
+                        score:
+                          type: number
+                          description: 점수
                       required:
                         - _id
                         - title
@@ -216,8 +215,80 @@ paths:
         '500':
           description: 서버 내부 오류
 
+  /api/activities/{questionId}:
+    get:
+      tags:
+        - Activities
+      summary: 더보기 버튼 클릭시 보여줄 데이터
+      description: 사용자가 풀었던 질문의 상세 내용(답변, AI 피드백, 정답 등)을 반환합니다.
+      parameters:
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: string
+          description: 조회할 질문의 고유 ID
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questionId:
+                    type: string
+                  category:
+                    type: string
+                    description: 질문 카테고리
+                    example: "Android"
+                  userAnswer:
+                    type: string
+                    description: 사용자가 제출한 답변
+                    example: "Layout XML은 Android 앱의 UI를 정의하는 파일입니다..."
+                  feedback:
+                    type: object
+                    description: AI 피드백
+                    properties:
+                      wellDone:
+                        type: string
+                        description: 잘한 점
+                        example: "ViewGroup과 View의 구조를 정확하게 설명하였습니다."
+                      improve:
+                        type: string
+                        description: 개선할 점
+                        example: "예제를 통해 실제 사용 맥락을 설명하면 더 좋습니다."
+                      mistake:
+                        type: string
+                        description: 틀린 점
+                        example: "layout_weight에 대한 설명이 누락되었습니다."
+                  answer:
+                    type: object
+                    description: AI가 제공한 정답/모범답안
+                    properties:
+                      answer:
+                        type: string
+                        description: 핵심 요약
+                        example: "RDBMS는 관계형 데이터베이스 관리 시스템으로, 데이터를 표 형태로 저장하고 관리합니다. DBMS는 데이터베이스 관리 시스템의 총칭입니다."
+                      explanation:
+                        type: string
+                        description: 개념 해설
+                        example: "RDBMS는 DBMS의 한 유형으로 관계형 모델 기반이고, DBMS는 데이터베이스 시스템 전체를 의미합니다."
+                      examples:
+                        type: array
+                        description: 예시들
+                        items:
+                          type: string
+                        example: [ "RDBMS 예: MySQL, PostgreSQL", "DBMS 예: MongoDB, Cassandra" ]
+                      notes:
+                        type: array
+                        description: 추가 설명 및 주의사항
+                        items:
+                          type: string
+                        example: [ "RDBMS는 정형 데이터를 다루는 데 강점", "DBMS는 다양한 데이터 모델 지원" ]
 
-
+  
+  
   /api/users:
     get:
       tags:
