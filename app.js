@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 import './src/cron/emailCron.js';
 import questionRoutes from "./src/routes/questionRoutes.js";
 import answerRoutes from "./src/routes/answerRoutes.js";
+import activityRoute from "./src/routes/activityRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +30,7 @@ app.use('/api/subscribe', subscribeRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/answers', answerRoutes);
 app.use('/api/questions', questionRoutes);
+app.use('/api/activities', activityRoute);
 
 // DB실행
 connectDB();
