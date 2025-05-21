@@ -1,5 +1,6 @@
 import User from '../models/users.js';
 import { UserActivity } from '../models/userActivity.js';
+import answer from "../models/answer.js";
 
 /**
  * 사용자 답변 이력(활동) 목록 조회
@@ -18,12 +19,18 @@ export async function listUserActivities(page = 1, limit = 10, email) {
             limit: limit
           },
           // 질문 정보 함께 가져오기 (중첩 populate)
-          populate: {
-            path: 'question',
-            select: 'text category content' // content 필드 추가
-          }
-        })
-        .lean();
+          populate: [
+            {
+              path: 'question',
+              select: 'text category content'
+            },
+            {
+              path: 'answers',
+              select: 'score'
+            }
+          ]
+        }).lean()
+    console.log(user);
     // 총 활동 수 계산
     const total = await User.aggregate([
       {$match: {email}},
@@ -46,9 +53,8 @@ export async function listUserActivities(page = 1, limit = 10, email) {
       date: activity.createdAt.toISOString().split('T')[0].slice(5), // ISO 형식 날짜
       title: activity.question?.text || '삭제된 질문',
       category: activity.question?.category || 'unknown',
-      score: activity.score || 0
+      score: activity.answers.score || 0
     }));
-
     if (page === 1) {
       // 첫 페이지일 경우만 메타데이터 포함
       return {

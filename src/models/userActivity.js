@@ -20,14 +20,14 @@ const userActivitySchema = new Schema({
         ref: 'Question',
         required: true
     },
-    aiAnswer: [{
+    aiAnswer: {
         type: Schema.Types.ObjectId,
         ref: 'Answer'
-    }],
-    answers: [{
+    },
+    answers: {
         type: Schema.Types.ObjectId,
         ref: 'Answer'
-    }]
+    }
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

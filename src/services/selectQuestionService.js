@@ -111,7 +111,6 @@ async function updateUserScheduleAndActivity(userId, schedule, groupType, indexF
     await UserActivity.create({
         user: userId,
         category: category,
-        question: questionId,
-        answers: []
+        question: questionId
     });
 }

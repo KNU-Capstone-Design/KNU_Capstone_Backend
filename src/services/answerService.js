@@ -184,7 +184,7 @@ async function updateUserActivity(userId, questionId, answerId, revealedAnswer, 
     const field = revealedAnswer ? "aiAnswer" : "answers";
     await UserActivity.updateOne(
         { user: userId, question: questionId },
-        { $push: { [field]: answerId } },
+        { $set: { [field]: answerId } },
         { upsert: true, session }
     );
 }
