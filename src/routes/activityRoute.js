@@ -1,10 +1,12 @@
 import express from 'express';
-import { getUserActivities } from '../controllers/activityController.js';
+import { getUserActivities, getDetailUserActivities } from '../controllers/activityController.js';
+import { validateToken } from "../middlewares/validateToken.js";
 
 const router = express.Router();
 
-/* 페이지네이션된 답변 이력 조회 */
- 
-router.get('/', getUserActivities);
+// GET /api/activities?page={page}&limit={limit} 요청시 라우팅
+router.get('/',validateToken, getUserActivities);
+// GET /api/activities/{questionId} 요청시 라우팅
+router.get('/:questionId', getDetailUserActivities);
 
 export default router;

@@ -1,52 +1,104 @@
-import UserActivity from '../models/userActivity.js';
-import Question     from '../models/questions.js';
-
-const DEFAULT_LIMIT = 15;
+import User from '../models/users.js';
+import { UserActivity } from '../models/userActivity.js';
 
 /**
  * 사용자 답변 이력(활동) 목록 조회
- * @param {Object} options
- * @param {number} options.page 조회할 페이지 번호
- * @param {string} options.userEmail 사용자 이메일
+ * @param page 조회할 페이지 번호
+ * @param limit 페이지당 항목 수
+ * @param email 사용자 이메일
  */
-export async function listUserActivities({ page = 1, userEmail }) {
-  const limit = DEFAULT_LIMIT;
+export async function listUserActivities(page = 1, limit = 10, email) {
   const skip = (page - 1) * limit;
+    const user = await User.findOne({email: email})
+        .populate({
+          path: 'activities',
+          options: {
+            sort: {createdAt: -1},
+            skip: skip,
+            limit: limit
+          },
+          // 질문 정보 함께 가져오기 (중첩 populate)
+          populate: {
+            path: 'question',
+            select: 'text category content' // content 필드 추가
+          }
+        })
+        .lean();
+    // 총 활동 수 계산
+    const total = await User.aggregate([
+      {$match: {email}},
+      {
+        $lookup: {
+          from: 'useractivities',
+          localField: '_id',
+          foreignField: 'user',
+          as: 'activities'
+        }
+      },
+      {$project: {count: {$size: '$activities'}}}
+    ]);
+    const totalCount = total.length > 0 ? total[0].count : 0;
+    const streak = user.streak.current;
 
-  // 사용자 활동과 총 개수 조회
-  const [activities, total] = await Promise.all([
-    UserActivity.find({ userEmail })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean(),
-    UserActivity.countDocuments({ userEmail })
-  ]);
+    // 활동 데이터 가공
+    const data = user.activities.map(activity => ({
+      _id: activity._id.toString(),
+      date: activity.createdAt.toISOString().split('T')[0].slice(5), // ISO 형식 날짜
+      title: activity.question?.text || '삭제된 질문',
+      category: activity.question?.category || 'unknown',
+      score: activity.score || 0
+    }));
 
-  // 질문 제목 매핑을 위해 questionId 배열 생성
-  const questionIds = activities.map((a) => a.questionId);
-  const questions = await Question.find({ _id: { $in: questionIds } })
-    .lean()
-    .select('title');
-  const titleMap = Object.fromEntries(
-    questions.map((q) => [q._id.toString(), q.title])
-  );
+    if (page === 1) {
+      // 첫 페이지일 경우만 메타데이터 포함
+      return {
+        email,
+        page,
+        limit,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        streak: streak,
+        data
+      };
+    } else {
+      // 그 외 페이지는 데이터만 반환
+      return {data};
+    }
+}
 
-  /* 프론트용 데이터 구조 변환 
-  const data = activities.map((a) => ({
-    activityId: a._id,
-    date:       a.createdAt,
-    title:      titleMap[a.questionId.toString()] || '',
-    score:      a.score
-  }));
-
+/**
+ * 활동 상세 조회 - 특정 활동에 대한 세부 정보
+ */
+export async function detailUserActivity(activityId, email) {
+  const userActivity = await UserActivity.findOne({ 
+      _id: activityId,
+      user: { $in: [await User.findOne({ email }).select('_id')] }
+    })
+    .populate('question')
+    .populate('answers')
+    .populate('aiAnswer')
+    .lean();
+    
+  if (!userActivity) {
+    return { error: '활동 기록을 찾을 수 없습니다.' };
+  }
+  
+  // 상세 정보 구성
   return {
-    page,
-    limit,
-    total,
-    totalPages: Math.ceil(total / limit),
-    data
+    _id: userActivity._id,
+    date: userActivity.createdAt.toISOString().split('T')[0],
+    question: {
+      text: userActivity.question?.text || '삭제된 질문',
+      category: userActivity.question?.category || 'unknown',
+    },
+    answers: userActivity.answers?.map(answer => ({
+      text: answer.answerText,
+      score: answer.score,
+      strengths: answer.strengths || [],
+      improvements: answer.improvements || []
+    })) || [],
+    aiAnswers: userActivity.aiAnswer?.map(answer => 
+      answer.aiAnswer
+    ) || []
   };
 }
-*/
-};

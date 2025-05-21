@@ -7,3 +7,5 @@ export const CS_CATEGORY = [
     'Network',
     'OS'
 ]
+
+export const DEFAULT_LIMIT = 10;
