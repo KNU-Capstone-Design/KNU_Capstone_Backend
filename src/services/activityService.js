@@ -30,7 +30,6 @@ export async function listUserActivities(page = 1, limit = 10, email) {
             }
           ]
         }).lean()
-    console.log(user);
     // 총 활동 수 계산
     const total = await User.aggregate([
       {$match: {email}},
