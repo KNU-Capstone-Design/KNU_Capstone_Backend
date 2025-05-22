@@ -1,8 +1,8 @@
 import User from '../models/users.js';
 import { UserActivity } from '../models/userActivity.js';
-import Answer from "../models/answer.js";  // 대문자로 수정 (모델 이름)
+import Answer from "../models/answer.js";
 import { parseToJSON } from "../utils/parseToJSON.js";
-import { returnAnswer } from '../services/answerService.js';  // 정답 요청 API 함수 추가
+import { returnAnswer } from '../services/answerService.js';
 
 /**
  * 사용자 답변 이력(활동) 목록 조회
@@ -47,9 +47,9 @@ export async function listUserActivities(page = 1, limit = 10, email) {
     ]);
     const totalCount = total.length > 0 ? total[0].count : 0;
     const streak = user.streak.current;
-
     // 활동 데이터 가공
     const data = user.activities.map(activity => ({
+      questionId: activity.question?._id.toString() || '',
       _id: activity._id.toString(),
       date: activity.createdAt.toISOString().split('T')[0].slice(5), // ISO 형식 날짜
       title: activity.question?.text || '삭제된 질문',

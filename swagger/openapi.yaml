@@ -195,6 +195,9 @@ paths:
                     items:
                       type: object
                       properties:
+                        questionId:
+                          type: string
+                          description: questionId
                         _id:
                           type: string
                           description: Activity ID

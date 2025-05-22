@@ -87,7 +87,6 @@ export async function returnFeedBack(email, questionId, userAnswer) {
 export async function returnAnswer(email, questionId) {
     try {
         const userId = await getUid(email);
-
         // 이미 aiAnswer 저장된 경우 DB 값만 반환
         let answerDoc = await Answer.findOne({
             user: userId,

@@ -41,7 +41,7 @@ export const getAnswer = async(req, res) => {
     try {
         const { questionId } = req.params;
         const email = req.email; // validateToken에서 설정된 이메일
-        
+
         const result = await returnAnswer(email, questionId);
         
         return res.status(200).json({
