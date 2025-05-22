@@ -8,12 +8,22 @@ import { getKSTDateString } from "../utils/date.js"
  */
 export async function getUserInfo(email) {
     try {
-        return await User
-            .find({ email })
+        const user = await User
+            .findOne({ email })
             .select({ email: 1, subscriptionStatus: 1, categories: 1, _id: 0 })
             .lean();
-    }
-    catch (error) {
+
+        if (!user) return null;
+
+        if (user.categories?.includes("Backend")) {
+            user.categories = user.categories.filter(cat => cat !== "Java");
+        }
+        if (user.categories?.includes("Frontend")) {
+            user.categories = user.categories.filter(cat => cat !== "JavaScript");
+        }
+
+        return user;
+    } catch (error) {
         console.error("[사용자 정보 조회 실패]", error);
     }
 }
@@ -31,14 +41,8 @@ export async function patchUserInfo(email, category) {
         if (category.includes("Backend")) {
             category.push("Java");
         }
-        else if(category.includes("Java")) {
-            category.pop("Java")
-        }
         if (category.includes("Frontend")) {
             category.push("JavaScript");
-        }
-        else if(category.includes("JavaScript")) {
-            category.pop("JavaScript");
         }
 
         return await User.findOneAndUpdate(
