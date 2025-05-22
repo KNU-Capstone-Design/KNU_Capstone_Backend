@@ -49,7 +49,7 @@ userActivitySchema.virtual('questionDetails', {
 
 // 답변 여부를 확인하는 가상 필드
 userActivitySchema.virtual('hasAnswer').get(function() {
-    return this.answers && this.answers.length > 0;
+    return this.answers;
 });
 
 const UserActivity = mongoose.model('UserActivity', userActivitySchema);

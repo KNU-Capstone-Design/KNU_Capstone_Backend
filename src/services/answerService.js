@@ -125,8 +125,8 @@ export async function returnAnswer(email, questionId) {
 async function saveFeedbackToDatabase(userId, questionId, userAnswer, feedback) {
     const session = await mongoose.startSession();
     session.startTransaction();
-    await updateUserStreak(userId,session).catch(err => console.error('스트릭 업데이트 실패:', err));
     try {
+        await updateUserStreak(userId,session).catch(err => console.error('스트릭 업데이트 실패:', err));
         // category 조회
         const category = await getActivityCategory(userId, questionId, session);
         // Answer 저장용 데이터 구조화
