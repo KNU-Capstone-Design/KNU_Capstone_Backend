@@ -7,6 +7,6 @@ const router = express.Router();
 // GET /api/activities?page={page}&limit={limit} 요청시 라우팅
 router.get('/',validateToken, getUserActivities);
 // GET /api/activities/{questionId} 요청시 라우팅
-router.get('/:questionId', getDetailUserActivities);
+router.get('/:activityId',validateToken, getDetailUserActivities);
 
 export default router;

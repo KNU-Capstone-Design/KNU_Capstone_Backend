@@ -9,7 +9,7 @@ import dotenv from 'dotenv';
 import './src/cron/emailCron.js';
 import questionRoutes from "./src/routes/questionRoutes.js";
 import answerRoutes from "./src/routes/answerRoutes.js";
-import activityRoute from "./src/routes/activityRoute.js";
+import activityRoute from "./src/routes/activityRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;

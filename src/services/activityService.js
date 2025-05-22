@@ -1,6 +1,8 @@
 import User from '../models/users.js';
 import { UserActivity } from '../models/userActivity.js';
-import answer from "../models/answer.js";
+import Answer from "../models/answer.js";  // 대문자로 수정 (모델 이름)
+import { parseToJSON } from "../utils/parseToJSON.js";
+import { returnAnswer } from '../services/answerService.js';  // 정답 요청 API 함수 추가
 
 /**
  * 사용자 답변 이력(활동) 목록 조회
@@ -52,7 +54,7 @@ export async function listUserActivities(page = 1, limit = 10, email) {
       date: activity.createdAt.toISOString().split('T')[0].slice(5), // ISO 형식 날짜
       title: activity.question?.text || '삭제된 질문',
       category: activity.question?.category || 'unknown',
-      score: activity.answers.score || 0
+      score: activity.answers?.score || 0
     }));
     if (page === 1) {
       // 첫 페이지일 경우만 메타데이터 포함
@@ -75,35 +77,44 @@ export async function listUserActivities(page = 1, limit = 10, email) {
  * 활동 상세 조회 - 특정 활동에 대한 세부 정보
  */
 export async function detailUserActivity(activityId, email) {
-  const userActivity = await UserActivity.findOne({ 
-      _id: activityId,
-      user: { $in: [await User.findOne({ email }).select('_id')] }
+  try {
+    const userActivity = await UserActivity.findOne({ 
+        _id: activityId,
     })
-    .populate('question')
-    .populate('answers')
-    .populate('aiAnswer')
-    .lean();
+      .populate('question')
+      .populate('answers')
+      .populate('aiAnswer')
+      .lean();
+      
+    if (!userActivity) {
+      return { error: '활동 기록을 찾을 수 없습니다.' };
+    }
     
-  if (!userActivity) {
-    return { error: '활동 기록을 찾을 수 없습니다.' };
+    // utils의 파싱 함수 사용
+    const parsedAiAnswer = parseToJSON(userActivity.aiAnswer?.aiAnswer, {
+      answer: userActivity.aiAnswer?.aiAnswer || '',
+      explanation: "",
+      examples: [],
+      notes: []
+    });
+    
+    // 상세 정보 구성
+    return {
+      feedback: {
+        userAnswer: userActivity.answers?.answerText || '',
+        wellDone: userActivity.answers?.strengths?.[0] || '',
+        improve: userActivity.answers?.improvements?.[0] || '',
+        mistake: userActivity.answers?.wrongPoints?.[0] || ''
+      },
+      answer: {
+        answer: parsedAiAnswer.answer || '',
+        explanation: parsedAiAnswer.explanation || '',
+        examples: parsedAiAnswer.examples || [],
+        notes: parsedAiAnswer.notes || []
+      }
+    };
+  } catch (error) {
+    console.error('활동 상세 조회 오류:', error);
+    return { error: '활동 상세 정보를 가져오는 중 오류가 발생했습니다.' };
   }
-  
-  // 상세 정보 구성
-  return {
-    _id: userActivity._id,
-    date: userActivity.createdAt.toISOString().split('T')[0],
-    question: {
-      text: userActivity.question?.text || '삭제된 질문',
-      category: userActivity.question?.category || 'unknown',
-    },
-    answers: userActivity.answers?.map(answer => ({
-      text: answer.answerText,
-      score: answer.score,
-      strengths: answer.strengths || [],
-      improvements: answer.improvements || []
-    })) || [],
-    aiAnswers: userActivity.aiAnswer?.map(answer => 
-      answer.aiAnswer
-    ) || []
-  };
 }

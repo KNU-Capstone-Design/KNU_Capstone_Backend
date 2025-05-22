@@ -197,7 +197,7 @@ paths:
                       properties:
                         _id:
                           type: string
-                          description: 질문 ID
+                          description: Activity ID
                         date:
                           type: string
                           description: 질문 발송 날짜
@@ -222,7 +222,7 @@ paths:
         '500':
           description: 서버 내부 오류
 
-  /api/activities/{questionId}:
+  /api/activities/{activityId}:
     get:
       tags:
         - Activities
@@ -230,7 +230,7 @@ paths:
       description: 사용자가 풀었던 질문의 상세 내용(답변, AI 피드백, 정답 등)을 반환합니다.
       parameters:
         - in: path
-          name: questionId
+          name: activityId
           required: true
           schema:
             type: string
@@ -243,20 +243,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  questionId:
-                    type: string
-                  category:
-                    type: string
-                    description: 질문 카테고리
-                    example: "Android"
-                  userAnswer:
-                    type: string
-                    description: 사용자가 제출한 답변
-                    example: "Layout XML은 Android 앱의 UI를 정의하는 파일입니다..."
                   feedback:
                     type: object
                     description: AI 피드백
                     properties:
+                      userAnswer:
+                        type: string
+                        description: 사용자가 제출한 답변
+                        example: "Layout XML은 Android 앱의 UI를 정의하는 파일입니다..."
                       wellDone:
                         type: string
                         description: 잘한 점
