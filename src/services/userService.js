@@ -53,7 +53,7 @@ export async function patchUserInfo(email, category) {
 
 /**
  * 사용자의 연속 풀이 일수 업데이트
- * @returns {Object|null} - 업데  이트된 streak 정보 또는 실패 시 null
+ * @returns {Object|null} - 업데이트된 streak 정보 또는 실패 시 null
  * @param userId
  */
 export async function updateUserStreak(userId, session) {
@@ -64,10 +64,6 @@ export async function updateUserStreak(userId, session) {
             console.error(`사용자를 찾을 수 없습니다: ${email}`);
             return null;
         }
-        // 날짜 정보 준비
-        const today = getKSTDateString(0);
-        const yesterday = getKSTDateString(-1);
-        const lastSolvedDate = user.streak.lastSolvedDate.toISOString().slice(0,10);
 
         // streak 로직 구현
         // 첫 풀이인 경우
@@ -77,8 +73,14 @@ export async function updateUserStreak(userId, session) {
                 lastSolvedDate: today
             };
         }
+
+        // 날짜 정보 
+        const today = getKSTDateString(0);
+        const yesterday = getKSTDateString(-1);
+        const lastSolvedDate = user.streak.lastSolvedDate.toISOString().slice(0,10);
+
         // 이미 오늘 풀었으면 변경 없음
-        else if (lastSolvedDate === today) {
+        if (lastSolvedDate === today) {
             return user.streak; // 이미 업데이트됨, 변경 없음
         }
         // 어제 풀었으면 streak 증가
