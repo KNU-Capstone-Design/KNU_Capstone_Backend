@@ -1,5 +1,9 @@
 import User from "../models/users.js";
 import { getKSTDateString } from "../utils/date.js"
+import { createLogger } from "../utils/logger.js";
+
+// 로거 생성
+const logger = createLogger('userService')
 
 /**
  * DB에서 사용자 정보(구독 상태, 구독한 카테고리)를 조회하는 비지니스 로직
@@ -24,7 +28,11 @@ export async function getUserInfo(email) {
 
         return user;
     } catch (error) {
-        console.error("[사용자 정보 조회 실패]", error);
+        logger.error('사용자 정보 조회 실패', {
+            error: error.message,
+            stack: error.stack,
+            email
+        })
     }
 }
 
@@ -51,7 +59,12 @@ export async function patchUserInfo(email, category) {
         );
     }
     catch (error) {
-        console.error("[사용자 정보 변경 실패]", error);
+        logger.error("사용자 정보 변경 실패", {
+            error: error.message,
+            stack: error.stack,
+            email,
+            category
+        });
     }
 }
 
@@ -65,7 +78,9 @@ export async function updateUserStreak(userId, session) {
         // 사용자 찾기
         const user = await User.findById(userId).session(session);
         if (!user) {
-            console.error(`사용자를 찾을 수 없습니다: ${userId}`);
+            logger.error('사용자를 찾을 수 없습니다', {
+                    userId
+                })
             return null;
         }
 
@@ -107,7 +122,11 @@ export async function updateUserStreak(userId, session) {
         await user.save();
         return user.streak;
     } catch (error) {
-        console.error("[스트릭 업데이트 실패]", error);
+        logger.error("스트릭 업데이트 실패", {
+            error: error.message,
+            stack: error.stack,
+            userId: userId
+        });
         return null;
     }
 }

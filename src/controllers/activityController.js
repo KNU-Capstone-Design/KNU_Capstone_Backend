@@ -11,7 +11,6 @@ export const getUserActivities = async (req, res) => {
     const result = await listUserActivities(page, limit, email);
     res.status(200).json(result);
   } catch (error) {
-      console.error('getUserActivities error', error);
       res.status(500).json({ error: '활동 목록 조회 중 오류 발생' });
   }
 };
@@ -24,7 +23,6 @@ export const getDetailUserActivities = async (req, res) =>
     const result = await detailUserActivity(activityId, email);
     res.status(200).json(result);
   } catch (error) {
-      console.error("getDetailUserActivities error", error);
       res.status(500).json({ error: '더보기 조회 중 오류 발생' });
   }
 }

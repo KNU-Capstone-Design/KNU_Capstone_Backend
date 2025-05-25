@@ -4,12 +4,16 @@ import { selectQuestion } from './selectQuestionService.js';
 import dotenv from 'dotenv';
 import { Question } from "../models/questions.js";
 import { UserAuth } from "../models/userAuth.js";
+import {createLogger} from "../utils/logger.js";
 
 dotenv.config();
 
+// 로거생성
+const logger = createLogger('mailService');
+
 // nodemailer transporter 생성 (SMTP 설정)
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: process.env.EMAIL_SERVICE,
     port: 465, // SSL 포트(465)
     secure: true, // SSL 사용 여부
     auth: {
@@ -41,9 +45,15 @@ async function sendEmail({ to, subject, html, text }) {
 
     try {
         await transporter.sendMail(mailOptions);
-        console.log(`[메일 전송 완료] to=${to}`);
+        logger.info(`메일 전송 완료`, {
+            email: to
+        });
     } catch (error) {
-        console.error(`[메일 전송 실패] to=${to}:`, error);
+        console.error(`메일 전송 실패`, {
+            error: error.message,
+            stack: error.stack,
+            email: to
+        });
     }
 }
 

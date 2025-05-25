@@ -1,13 +1,17 @@
 import User from '../models/users.js'
-import {sendWelcomeEmail} from "./mailService.js";
-import {generateToken} from "./authService.js";
+import { sendWelcomeEmail } from "./mailService.js";
+import { generateToken } from "./authService.js";
+import { createLogger } from "../utils/logger.js";
 
-/*
-    DB에 이메일 등록하는 비즈니스 로직
-    @param { String } = email
-    @param { Array<String> } = categories
-    @param { Boolean } = subscriptionStatus
-    @returns { Promise<Object> } => DB에 저장되는 문서
+// 로거 생성
+const logger = createLogger('subscribeService')
+
+/**
+ DB에 이메일 등록하는 비즈니스 로직
+ @returns { Promise<Object> } => DB에 저장되는 문서
+ * @param email
+ * @param categories
+ * @param subscriptionStatus
  */
 export const subscribe = async (email, categories, subscriptionStatus) => {
     // 재구독 유저 확인
@@ -40,6 +44,12 @@ export const subscribe = async (email, categories, subscriptionStatus) => {
     await generateToken(email);
     // 환영 이메일 발송
     await sendWelcomeEmail( { to: email });
+
+    // 로그에 저장
+    logger.info('구독 성공', {
+        email: email
+    })
+
     // DB에 저장하고 저장된 문서를 반환
     return await newUser.save();
 };

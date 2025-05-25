@@ -6,6 +6,10 @@ import Answer from "../models/answer.js";
 import { UserActivity } from "../models/userActivity.js";
 import User from "../models/users.js";
 import { updateUserStreak } from "./userService.js";
+import { createLogger } from "../utils/logger.js";
+
+//로거 생성
+const logger = createLogger('answerService');
 
 /*
     사용자가 답변을 입력하거나 정답 요청을 했을때의 비지니스 로직
@@ -17,7 +21,12 @@ async function getUid(email) {
         .findOne({ email })
         .select("_id")
         .lean();
-    if (!user) throw new Error(`사용자를 찾을 수 없습니다: ${email}`);
+    if (!user) {
+        logger.error('사용자를 조회 실패', {
+            email: email
+        });
+        throw new Error
+    }
     return user._id;
 }
 
@@ -38,7 +47,13 @@ export async function returnFeedBack(email, questionId, userAnswer) {
             .findById(questionId)
             .select("text")
             .lean();
-        if (!userQuestion) throw new Error("질문을 찾을 수 없습니다.");
+        if (!userQuestion) {
+            logger.error('질문 조회 실패', {
+                userQuestion: userQuestion,
+                email: email
+            });
+            throw new Error
+        }
         const text = userQuestion.text;
 
         // AI 피드백 요청 및 JSON 파싱
@@ -77,7 +92,12 @@ export async function returnFeedBack(email, questionId, userAnswer) {
             wrongPoints:  answerDoc.wrongPoints
         };
     } catch (error) {
-        console.error('피드백 처리 중 오류:', error);
+        logger.error('피드백 처리 중 오류:', {
+            error: error.message,
+            stack: error.stack,
+            questionId: questionId,
+            email: email
+        });
         throw error;
     }
 }
@@ -100,7 +120,13 @@ export async function returnAnswer(email, questionId) {
             .findById(questionId)
             .select("text")
             .lean();
-        if (!userQuestion) throw new Error("질문을 찾을 수 없습니다.");
+        if (!userQuestion) {
+            logger.error('질문 조회 실패', {
+                userQuestion: userQuestion,
+                email: email
+            })
+            throw new Error;
+        };
 
         // AI 모범답안 호출
         const aiText = await getAnswerFromGroq(userQuestion.text);
@@ -108,11 +134,20 @@ export async function returnAnswer(email, questionId) {
         // DB에 저장 (트랜잭션 포함)
         saveFeedbackToDatabase(
             userId, questionId, "", { aiAnswer: aiText }
-        ).catch(err => console.error('답변 저장 실패:', err));
-
+        ).catch(error => logger.error('AI 정답 저장 실패:', {
+            error: error.message,
+            stack: error.stack,
+            questionId: questionId,
+            email: email
+        }));
         return aiText;
     } catch (error) {
-        console.error('피드백 처리 중 오류:', error);
+        logger.error('AI 정답 생성 및 처리 중 오류:', {
+            error: error.message,
+            stack: error.stack,
+            questionId: questionId,
+            email: email
+        });
         throw error;
     }
 }
@@ -125,7 +160,11 @@ async function saveFeedbackToDatabase(userId, questionId, userAnswer, feedback) 
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        await updateUserStreak(userId,session).catch(err => console.error('스트릭 업데이트 실패:', err));
+        await updateUserStreak(userId,session).catch(error => logger.error('스트릭 업데이트 실패:', {
+            error: error.message,
+            stack: error.stack,
+            userId: userId
+        }));
         // category 조회
         const category = await getActivityCategory(userId, questionId, session);
         // Answer 저장용 데이터 구조화
@@ -137,11 +176,19 @@ async function saveFeedbackToDatabase(userId, questionId, userAnswer, feedback) 
         await updateUserActivity(userId, questionId, answer._id, answerData.revealedAnswer, session);
 
         await session.commitTransaction();
-        console.log(`답변 저장 및 UserActivity 업데이트 완료 (answerId=${answer._id})`);
+        logger.info('답변 저장 및 UserActivity 업데이트 완료', {
+            userId: userId,
+            answerId: answer._id
+        });
         return answer;
     } catch (error) {
         await session.abortTransaction();
-        console.error('saveFeedbackToDatabase error:', error);
+        logger.error('saveFeedbackToDatabase error:', {
+            error: error.message,
+            stack: error.stack,
+            questionId: questionId,
+            userId: userId
+        });
         throw error;
     } finally {
         session.endSession();

@@ -1,8 +1,11 @@
 import User from '../models/users.js';
 import { UserActivity } from '../models/userActivity.js';
-import Answer from "../models/answer.js";
 import { parseToJSON } from "../utils/parseToJSON.js";
-import { returnAnswer } from '../services/answerService.js';
+import { createLogger } from "../utils/logger.js";
+
+
+// 로거 생성
+const logger = createLogger('activityService');
 
 /**
  * 사용자 답변 이력(활동) 목록 조회
@@ -87,7 +90,10 @@ export async function detailUserActivity(activityId, email) {
       .lean();
       
     if (!userActivity) {
-      return { error: '활동 기록을 찾을 수 없습니다.' };
+      logger.error('활동 기록 조회 실패', {
+        email: email
+      })
+      return;
     }
     
     // utils의 파싱 함수 사용
@@ -114,7 +120,10 @@ export async function detailUserActivity(activityId, email) {
       }
     };
   } catch (error) {
-    console.error('활동 상세 조회 오류:', error);
-    return { error: '활동 상세 정보를 가져오는 중 오류가 발생했습니다.' };
+    logger.error('활동 정보 조회중 오류 발생', {
+      error: error.message,
+      stack: error.stack,
+      email: email
+    })
   }
 }

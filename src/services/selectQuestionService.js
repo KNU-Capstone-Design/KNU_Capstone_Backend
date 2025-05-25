@@ -10,6 +10,10 @@ import User from '../models/users.js';
 import { UserActivity } from '../models/userActivity.js';
 import { Question } from "../models/questions.js";
 import { CS_CATEGORY } from "../config/constants.js";
+import { createLogger } from "../utils/logger.js";
+
+// 로거 생성
+const logger = createLogger('selectQuestionService');
 
 export async function selectQuestion(email) {
     // 사용자 정보 조회 - email 인덱스 활용
@@ -113,4 +117,7 @@ async function updateUserScheduleAndActivity(userId, schedule, groupType, indexF
         category: category,
         question: questionId
     });
+    logger.info('사용자 스케줄 업데이트 및 활동기록 생성', {
+        userId: userId
+    })
 }
