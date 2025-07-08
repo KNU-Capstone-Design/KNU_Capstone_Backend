@@ -75,14 +75,6 @@ jobs:
           git add docs/
           git commit -m "Swagger UI 자동 배포" || echo "변경 사항 없음"
           git push origin HEAD || echo "❌ push 실패"
-
-      - name: Notify Frontend (Slack Webhook)
-        run: |
-          curl -X POST ${{ secrets.FRONTEND_WEB_HOOK_URL }} \
-            -H "Content-Type: application/json" \
-            -d '{
-            "text": "📘 Swagger 문서가 업데이트되었습니다!\n🔗 https://knu-capstone-design.github.io/KNU_Capstone_Backend/>"
-          }'
       
   # 코드 배포시 도커 컨테이너 재시작( ~/docker-compose.yml)
   deploy-code:
