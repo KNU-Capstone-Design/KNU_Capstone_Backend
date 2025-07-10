@@ -1,41 +1,62 @@
 /* Entry Point */
 import express from 'express';
+import dotenv from 'dotenv';
 import connectDB from './src/config/mongoose.js';
+import { setupMiddleware } from './src/middlewares/appMiddleware.js';
+import './src/cron/emailCron.js';
+
+// 라우터 임포트
 import subscribeRoutes from './src/routes/subscribeRoutes.js';
 import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
-import { setupMiddleware } from './src/middlewares/appMiddleware.js';
-import dotenv from 'dotenv';
-import './src/cron/emailCron.js';
 import questionRoutes from "./src/routes/questionRoutes.js";
 import answerRoutes from "./src/routes/answerRoutes.js";
 import activityRoute from "./src/routes/activityRoutes.js";
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || 'localhost';
+// AdminJS에서 사용할 모델 임포트
+import { setupCSP } from './src/middlewares/adminMiddleware.js';
+import { setupAdminJS } from './src/config/admin.js';
+import { setupAdminRouter } from './src/routes/adminRoutes.js';
 
 dotenv.config();
+// 애플리케이션 시작 함수
+const start = async () => {
+  const app = express();
+  const PORT = process.env.PORT || 3000;
+  const HOST = process.env.HOST || 'localhost';
 
-// 미들웨어 설정 적용
-setupMiddleware(app);
+  // DB 연결
+  connectDB();
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
+  // 미들웨어 설정 적용
+  setupMiddleware(app);
+  setupCSP(app);
 
-// 라우터 설정
-app.use('/api/users', userRoutes);
-app.use('/api/subscribe', subscribeRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/answers', answerRoutes);
-app.use('/api/questions', questionRoutes);
-app.use('/api/activities', activityRoute);
+  // 기본 라우트
+  app.get('/', (req, res) => {
+    res.send('Server is running!');
+  });
 
-// DB실행
-connectDB();
+  // API 라우터 설정
+  app.use('/api/users', userRoutes);
+  app.use('/api/subscribe', subscribeRoutes);
+  app.use('/api/auth', authRoutes);
+  app.use('/api/answers', answerRoutes);
+  app.use('/api/questions', questionRoutes);
+  app.use('/api/activities', activityRoute);
 
-// 서버 실행
-app.listen(PORT, HOST, () => {
+  // AdminJS 설정
+  const admin = setupAdminJS();
+  setupAdminRouter(app, admin);
+
+  // 서버 실행
+  app.listen(PORT, () => {
     console.log(`Server running at http://${HOST}:${PORT}`);
+    console.log(`AdminJS started on http://${HOST}:${PORT}${admin.options.rootPath}`);
+  });
+};
+
+// Admin 실행 예외 처리
+start().catch(err => {
+  console.error('애플리케이션 시작 중 오류 발생:', err);
 });
