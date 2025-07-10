@@ -41,6 +41,8 @@ const userSchema = new mongoose.Schema({
             lastTECHIndex: 0
         }]
     }
+},{
+    timestamps: true
 });
 
 // 인덱스 추가

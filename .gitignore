@@ -331,3 +331,6 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# README.md파일 제외
+README.md
