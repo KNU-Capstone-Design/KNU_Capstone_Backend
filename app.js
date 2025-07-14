@@ -17,6 +17,8 @@ import activityRoute from "./src/routes/activityRoutes.js";
 import { setupCSP } from './src/middlewares/adminMiddleware.js';
 import { setupAdminJS } from './src/config/admin.js';
 import { setupAdminRouter } from './src/routes/adminRoutes.js';
+//import {serverResource} from "./src/admin/resources/server.resource.js";
+import serverRoutes from "./src/routes/serverRoutes.js";
 
 dotenv.config();
 // 애플리케이션 시작 함수
@@ -44,9 +46,11 @@ const start = async () => {
   app.use('/api/answers', answerRoutes);
   app.use('/api/questions', questionRoutes);
   app.use('/api/activities', activityRoute);
+  app.use('/api/server-resources', serverRoutes);
 
   // AdminJS 설정
   const admin = setupAdminJS();
+  await admin.watch()
   setupAdminRouter(app, admin);
 
   // 서버 실행

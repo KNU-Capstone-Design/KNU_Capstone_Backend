@@ -1,5 +1,6 @@
 import AdminJSExpress from '@adminjs/express';
 import session from 'express-session';
+import { getServerResources } from '../controllers/serverController.js';
 
 export const setupAdminRouter = (app, admin) => {
   // 관리자 인증 함수
@@ -39,8 +40,11 @@ export const setupAdminRouter = (app, admin) => {
     sessionOptions
   );
 
+  // // 서버 리소스 API 엔드포인트 추가
+  // adminRouter.get('api/server-resources', getServerResources);
+
   // AdminJS 라우터를 메인 앱에 연결
-  app.use(admin.options.rootPath, adminRouter);
+  app.use('/admin', adminRouter);
 
   return adminRouter;
 };
