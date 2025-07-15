@@ -12,6 +12,7 @@ import userRoutes from "./src/routes/userRoutes.js";
 import questionRoutes from "./src/routes/questionRoutes.js";
 import answerRoutes from "./src/routes/answerRoutes.js";
 import activityRoute from "./src/routes/activityRoutes.js";
+import logRoutes from "./src/routes/logRoutes.js";
 
 // AdminJS에서 사용할 모델 임포트
 import { setupCSP } from './src/middlewares/adminMiddleware.js';
@@ -47,6 +48,7 @@ const start = async () => {
   app.use('/api/questions', questionRoutes);
   app.use('/api/activities', activityRoute);
   app.use('/api/server-resources', serverRoutes);
+  app.use('/api/logs', logRoutes);
 
   // AdminJS 설정
   const admin = setupAdminJS();
