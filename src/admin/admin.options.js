@@ -1,5 +1,5 @@
 import { resources } from './resources/index.js';
-import { serverMonitorComponent } from "./components/componets.js";
+import { errorLogMonitorComponent, infoLogMonitorComponent, serverMonitorComponent } from "./components/componets.js";
 
 export const adminOptions = {
   resources: resources,
@@ -16,9 +16,19 @@ export const adminOptions = {
   // 커스텀 페이지를 위한 네비게이션 설정
   pages: {
     'serverMonitor' : {
-        label: '서버 모니터링',
-        icon: 'Server',
+        label: '서버 상태',
+        icon: 'Activity',
         component: serverMonitorComponent
+    },
+    'infoLog': {
+        label: '정보 로그',
+        icon: 'Info',
+        component: infoLogMonitorComponent
+    },
+    'errorLog': {
+        label: '오류 로그',
+        icon: 'AlertTriangle',
+        component: errorLogMonitorComponent
     }
   }
 }
