@@ -88,11 +88,12 @@ jobs:
       - name: SSH into Azure VM and deploy code
         uses: appleboy/ssh-action@v0.1.3
         with:
-          host: ${{ secrets.AZURE_VM_IP }}
-          username: ${{ secrets.AZURE_USER }}
-          key: ${{ secrets.AZURE_SSH_KEY }}
+          host: ${{ secrets.VM_IP }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          port: 2222
           script: |
-            cd ~/KNU_Capstone_Backend
+            cd ~/KNU_Capstone_Design/KNU_Capstone_Backend
             git pull origin main
             npm install
             cd ~
