@@ -9,3 +9,5 @@ export const CS_CATEGORY = [
 ]
 
 export const DEFAULT_LIMIT = 10;
+
+export const API_LIMIT = 20; // 하루 API 호출 제한

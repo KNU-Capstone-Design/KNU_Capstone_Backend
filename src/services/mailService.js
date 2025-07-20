@@ -4,7 +4,8 @@ import { selectQuestion } from './selectQuestionService.js';
 import dotenv from 'dotenv';
 import { Question } from "../models/questions.js";
 import { UserAuth } from "../models/userAuth.js";
-import {createLogger} from "../utils/logger.js";
+import { createLogger } from "../utils/logger.js";
+import { increaseQuestionEmailCount, increaseWelcomeEmailCount } from "./stmpUsageService.js";
 
 dotenv.config();
 
@@ -84,6 +85,9 @@ export async function sendQuestionEmail({ to }) {
         text: '오늘도 화이팅!',
         html
     });
+
+    // 데이터베이스에 질문 이메일 전송 기록 추가
+    await increaseQuestionEmailCount();
 }
 
 /**
@@ -106,4 +110,8 @@ export async function sendWelcomeEmail({ to }) {
         text: "구독 완료!",
         html
     });
+
+    // 데이터베이스에 환영 이메일 전송 기록 추가
+    await increaseWelcomeEmailCount();
+
 }

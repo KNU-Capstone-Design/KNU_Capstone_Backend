@@ -18,6 +18,13 @@ export const requestAnswer = async (req, res) => {
 
         const result = await returnFeedBack(email, questionId, answer);
 
+        if(result.error) {
+            return res.status(429).json({
+                success: false,
+                error: "일일 API 사용량 제한을 초과했습니다. 내일 다시 시도해주세요."
+            });
+        }
+
         return res.status(200).json({
                 score: result.score,
                 strengths: result.strengths,
