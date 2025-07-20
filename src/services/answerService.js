@@ -7,6 +7,8 @@ import { UserActivity } from "../models/userActivity.js";
 import User from "../models/users.js";
 import { updateUserStreak } from "./userService.js";
 import { createLogger } from "../utils/logger.js";
+import { getKSTDateString } from "../utils/date.js";
+import { checkDailyApiUsageLimit, recordApiUsage } from "./apiUsageService.js";
 
 //로거 생성
 const logger = createLogger('answerService');
@@ -34,6 +36,19 @@ async function getUid(email) {
 export async function returnFeedBack(email, questionId, userAnswer) {
     try {
         const userId = await getUid(email);
+        const date = getKSTDateString();
+
+        // API 사용량 제한 확인
+        const canUseApi = await checkDailyApiUsageLimit(email, date);
+        if (!canUseApi) {
+            logger.warn('일일 API 사용량 제한 초과', {
+                email: email,
+                date: date
+            });
+            return {
+                error: true
+            };
+        }
 
         // 이미 제출한 일반 답변이 있으면 업데이트
         let answerDoc = await Answer.findOne({
@@ -70,6 +85,9 @@ export async function returnFeedBack(email, questionId, userAnswer) {
             }
         */
 
+        // API 사용량 기록
+        await recordApiUsage(email, date);
+
         if (answerDoc) {
             // 기존 답변 업데이트
             answerDoc.answerText    = userAnswer;
@@ -103,17 +121,31 @@ export async function returnFeedBack(email, questionId, userAnswer) {
 }
 
 
-// 사용자가 “모르겠어요” 버튼을 눌렀을때 정답을 반환하고 DB에 저장
+// 사용자가 "모르겠어요" 버튼을 눌렀을때 정답을 반환하고 DB에 저장
 export async function returnAnswer(email, questionId) {
+    const date = getKSTDateString();
     try {
         const userId = await getUid(email);
-        // 이미 aiAnswer 저장된 경우 DB 값만 반환
+
+        // 이미 aiAnswer 저장된 경우 DB 값만 반환 (API 호출 없음)
         let answerDoc = await Answer.findOne({
             user: userId,
             question: questionId,
             revealedAnswer: true
         }).lean();
         if (answerDoc) return answerDoc.aiAnswer;
+
+        // API 사용량 제한 확인
+        const canUseApi = await checkDailyApiUsageLimit(email, date);
+        if (!canUseApi) {
+            logger.warn('일일 API 사용량 제한 초과', {
+                email: email,
+                date: date
+            });
+            return {
+                error: true
+            };
+        }
 
         // 질문 텍스트 조회
         const userQuestion = await Question
@@ -130,6 +162,9 @@ export async function returnAnswer(email, questionId) {
 
         // AI 모범답안 호출
         const aiText = await getAnswerFromGroq(userQuestion.text);
+
+        // API 사용량 기록
+        await recordApiUsage(email, date);
 
         // DB에 저장 (트랜잭션 포함)
         saveFeedbackToDatabase(
