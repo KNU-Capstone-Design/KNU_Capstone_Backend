@@ -3,12 +3,13 @@ import * as AdminJSMongoose from '@adminjs/mongoose';
 import { adminOptions } from '../admin/admin.options.js';
 import { userResource } from "../admin/resources/user.resource.js";
 import {
+  apiUsageComponent,
   componentLoader,
   errorLogMonitorComponent,
   infoLogMonitorComponent,
   serverMonitorComponent
 } from "../admin/components/componets.js";
-import {questionResource} from "../admin/resources/question.resource.js";
+import { questionResource } from "../admin/resources/question.resource.js";
 
 
 
@@ -22,7 +23,7 @@ export const setupAdminJS = () => {
     componentLoader,
     resources: [userResource, questionResource],
     components: {
-      serverMonitorComponent,errorLogMonitorComponent,infoLogMonitorComponent
+      serverMonitorComponent,errorLogMonitorComponent,infoLogMonitorComponent,apiUsageComponent
     }
   });
   return admin;

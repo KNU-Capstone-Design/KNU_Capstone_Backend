@@ -96,7 +96,7 @@ jobs:
             cd ~/KNU_Capstone_Design/KNU_Capstone_Backend
             git pull origin main
             npm install
-            cd ~
+            cd ..
             docker-compose down 
             docker-compose build app nginx
             docker-compose up -d
