@@ -1,5 +1,10 @@
 import { resources } from './resources/index.js';
-import { errorLogMonitorComponent, infoLogMonitorComponent, serverMonitorComponent } from "./components/componets.js";
+import {
+    apiUsageComponent,
+    errorLogMonitorComponent,
+    infoLogMonitorComponent,
+    serverMonitorComponent
+} from "./components/componets.js";
 
 export const adminOptions = {
   resources: resources,
@@ -29,6 +34,11 @@ export const adminOptions = {
         label: '오류 로그',
         icon: 'AlertTriangle',
         component: errorLogMonitorComponent
+    },
+      'ApiMonitor': {
+          label: 'API, SMTP 모니터링',
+          icon: 'Info',
+          component: apiUsageComponent
     }
   }
 }

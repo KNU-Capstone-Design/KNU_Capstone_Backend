@@ -5,3 +5,5 @@ import InfoLog from '../src/admin/components/InfoLogMonitor'
 AdminJS.UserComponents.InfoLog = InfoLog
 import errorLog from '../src/admin/components/ErrorLogMonitor'
 AdminJS.UserComponents.errorLog = errorLog
+import ApiUsage from '../src/admin/components/ApiUsageMonitor'
+AdminJS.UserComponents.ApiUsage = ApiUsage

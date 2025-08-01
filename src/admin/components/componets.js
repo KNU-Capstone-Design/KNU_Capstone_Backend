@@ -8,4 +8,6 @@ const infoLogMonitorComponent = componentLoader.add('InfoLog', './InfoLogMonitor
 
 const errorLogMonitorComponent = componentLoader.add('errorLog', './ErrorLogMonitor.jsx');
 
-export { componentLoader, serverMonitorComponent, infoLogMonitorComponent, errorLogMonitorComponent };
+const apiUsageComponent = componentLoader.add('ApiUsage', './ApiUsageMonitor.jsx');
+
+export { componentLoader, serverMonitorComponent, infoLogMonitorComponent, errorLogMonitorComponent, apiUsageComponent };
