@@ -43,14 +43,10 @@ const ApiUsageMonitor = () => {
 
     try {
       // API 사용량 데이터 가져오기 - getDailyApiUsageAggregation() 함수 사용
-      console.log('[ApiUsageMonitor] API 사용량 데이터 요청 시작');
-      const apiUsageResponse = await axios.get('/api/server/api-usage');
-      console.log('[ApiUsageMonitor] API 사용량 데이터 요청 성공', { count: apiUsageResponse.data.length });
+      const apiUsageResponse = await axios.get('/api/server-resources/api-usage');
 
       // SMTP 사용량 데이터 가져오기
-      console.log('[ApiUsageMonitor] SMTP 사용량 데이터 요청 시작');
-      const smtpUsageResponse = await axios.get('/api/server/smtp-usage');
-      console.log('[ApiUsageMonitor] SMTP 사용량 데이터 요청 성공', { count: smtpUsageResponse.data.length });
+      const smtpUsageResponse = await axios.get('/api/server-resources/smtp-usage');
 
       // 데이터 설정
       setApiData(apiUsageResponse.data);
@@ -74,11 +70,9 @@ const ApiUsageMonitor = () => {
   };
 
   useEffect(() => {
-    console.log('[ApiUsageMonitor] 컴포넌트 마운트, 데이터 로딩 시작');
     fetchData();
 
     return () => {
-      console.log('[ApiUsageMonitor] 컴포넌트 언마운트');
     };
   }, []);
 

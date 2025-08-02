@@ -37,7 +37,7 @@ export const adminOptions = {
     },
       'ApiMonitor': {
           label: 'API, SMTP 모니터링',
-          icon: 'Info',
+          icon: 'TrendingUp',
           component: apiUsageComponent
     }
   }
