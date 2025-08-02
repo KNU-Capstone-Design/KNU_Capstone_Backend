@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 프로젝트 루트의 상위 디렉토리의 logs 폴더
-const logsDir = path.join(__dirname, '../../../logs');
+const logsDir = path.join(__dirname, '../../logs');
 
 class LogService {
   // 애플리케이션 로그 읽기 (app.log + app1.log ~ app4.log)
@@ -54,7 +54,7 @@ class LogService {
       }
 
       if (allLogData.trim() === '') {
-          console.log("애플리케이션 로그 파일을 찾을 수 없음");
+          console.log("에러 로그 파일을 찾을 수 없음");
       }
 
       return this.limitLogLines(allLogData);
