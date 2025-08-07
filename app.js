@@ -33,6 +33,11 @@ const start = async () => {
   // DB 연결
   connectDB();
 
+  // AdminJS 설정
+  const admin = setupAdminJS();
+  await admin.watch()
+  setupAdminRouter(app, admin);
+
   // 미들웨어 설정 적용
   setupMiddleware(app);
   setupCSP(app);
@@ -59,10 +64,6 @@ const start = async () => {
   app.use('/api/server-resources', serverRoutes);
   app.use('/api/logs', logRoutes);
 
-  // AdminJS 설정
-  const admin = setupAdminJS();
-  await admin.watch()
-  setupAdminRouter(app, admin);
 
   // 서버 실행
   app.listen(PORT, () => {

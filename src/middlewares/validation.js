@@ -22,8 +22,8 @@ export const handleValidationErrors = (req, res, next) => {
             error: '입력값이 올바르지 않습니다.',
             details: errors.array()
         });
-    next();
     }
+    next();
 };
 
 // 회원가입 검증 규칙
