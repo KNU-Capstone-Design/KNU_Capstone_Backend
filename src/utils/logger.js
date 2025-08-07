@@ -45,6 +45,10 @@ export function createLogger(service = 'app') {
       !isDev && new winston.transports.File({ 
         filename: path.join(LOG_DIR, 'app.log'),
         level: 'info',
+        format: combine(
+            winston.format(info => info.level === 'info' ? info : false)(),
+            logFormat
+        ),
         maxsize: 5242880, // 5MB
         maxFiles: 5,
       }),

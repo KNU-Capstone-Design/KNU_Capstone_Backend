@@ -26,7 +26,7 @@ export const subscribeUser = async (req, res) => {
         }
         logger.error('Error', {
             error: error.message,
-            stack: error.stack
+            stack: error.stack,
         })
         res.status(500).json({ error: 'Server error' });
     }

@@ -17,10 +17,10 @@ import logRoutes from "./src/routes/logRoutes.js";
 
 // AdminJS에서 사용할 모델 임포트
 import { setupCSP } from './src/middlewares/adminMiddleware.js';
-import { setupAdminJS } from './src/config/admin.js';
-import { setupAdminRouter } from './src/routes/adminRoutes.js';
-//import {serverResource} from "./src/admin/resources/server.resource.js";
-import serverRoutes from "./src/routes/serverRoutes.js";
+import { setupAdminJS} from './src/config/admin.js';
+import { setupAdminRouter } from "./src/routes/adminRoutes.js";
+import apiLimiter from './src/middlewares/rateLimiter.js';
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 // 애플리케이션 시작 함수
@@ -35,6 +35,13 @@ const start = async () => {
   // 미들웨어 설정 적용
   setupMiddleware(app);
   setupCSP(app);
+
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
+
+  // 모든 API 요청에 rate-limit 적용
+  app.use('/api', apiLimiter);
 
   // 기본 라우트
   app.get('/', (req, res) => {
