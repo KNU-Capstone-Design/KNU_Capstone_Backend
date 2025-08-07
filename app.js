@@ -21,6 +21,7 @@ import { setupAdminJS} from './src/config/admin.js';
 import { setupAdminRouter } from "./src/routes/adminRoutes.js";
 import apiLimiter from './src/middlewares/rateLimiter.js';
 import cookieParser from "cookie-parser";
+import serverRoutes from "./src/routes/serverRoutes.js";
 
 dotenv.config();
 // 애플리케이션 시작 함수
