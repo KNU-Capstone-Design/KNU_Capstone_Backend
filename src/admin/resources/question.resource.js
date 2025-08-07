@@ -26,6 +26,8 @@ export const questionResource = {
           { value: 'Backend', label: '백엔드' },
           { value: 'Android', label: '안드로이드' },
           { value: 'iOS', label: 'iOS' },
+          { value: 'Unreal', label: '언리얼엔진' },
+          { value: 'Unity', label: '유니티엔진' },
           { value: 'Database', label: '데이터베이스' },
           { value: 'Algorithm', label: '알고리즘' },
           { value: 'Network', label: '네트워크' },

@@ -8,6 +8,8 @@ export const CS_CATEGORY = [
     'OS'
 ]
 
+export const TECH_CATEGORY = ['Android', 'iOS', 'Frontend', 'Backend', 'Unreal', 'Unity'];
+
 export const DEFAULT_LIMIT = 10;
 
 export const API_LIMIT = 20; // 하루 API 호출 제한
