@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import { Question } from "../models/questions.js";
 import { UserAuth } from "../models/userAuth.js";
 import { createLogger } from "../utils/logger.js";
-import { increaseQuestionEmailCount, increaseWelcomeEmailCount } from "./stmpUsageService.js";
+import { increaseQuestionEmailCount, increaseWelcomeEmailCount } from "./smtpUsageService.js";
 
 dotenv.config();
 
