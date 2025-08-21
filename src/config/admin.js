@@ -8,7 +8,7 @@ import {
   errorLogMonitorComponent,
   infoLogMonitorComponent,
   serverMonitorComponent
-} from "../admin/components/componets.js";
+} from "../admin/components/components.js";
 import { questionResource } from "../admin/resources/question.resource.js";
 
 

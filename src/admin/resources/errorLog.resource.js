@@ -1,4 +1,4 @@
-import {errorLogMonitorComponent} from "../components/componets.js";
+import {errorLogMonitorComponent} from "../components/components.js";
 
 
 export const errorLogResource = {

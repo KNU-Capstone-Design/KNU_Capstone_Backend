@@ -4,7 +4,7 @@ import {
     errorLogMonitorComponent,
     infoLogMonitorComponent,
     serverMonitorComponent
-} from "./components/componets.js";
+} from "./components/components.js";
 
 export const adminOptions = {
   resources: resources,

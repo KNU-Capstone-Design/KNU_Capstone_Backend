@@ -1,4 +1,4 @@
-import {infoLogMonitorComponent} from "../components/componets.js";
+import {infoLogMonitorComponent} from "../components/components.js";
 
 
 export const infoLogResource = {

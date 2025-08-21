@@ -1,4 +1,4 @@
-import { serverMonitorComponent } from "../components/componets.js";
+import { serverMonitorComponent } from "../components/components.js";
 
 export const serverResource = {
   resource: [],

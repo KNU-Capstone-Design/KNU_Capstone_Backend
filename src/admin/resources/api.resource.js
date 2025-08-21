@@ -1,4 +1,4 @@
-import { apiUsageComponent } from "../components/componets.js";
+import { apiUsageComponent } from "../components/components.js";
 
 
 export const apiResource = {
