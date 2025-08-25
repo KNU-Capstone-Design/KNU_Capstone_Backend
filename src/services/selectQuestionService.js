@@ -89,9 +89,9 @@ async function findNextQuestion(category, sentQuestionIds) {
         return randomQuestions.length > 0 ? randomQuestions[0] : null;
     } else {
         // 일반적인 경우 표준 쿼리 사용
-        return await Question.findOne({
+        return Question.findOne({
             category: category,
-            _id: { $nin: sentQuestionIds }
+            _id: {$nin: sentQuestionIds}
         }).lean();
     }
 }

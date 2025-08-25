@@ -29,7 +29,7 @@ export async function increaseWelcomeEmailCount() {
     }
 }
 
-export async function increaseQuestionEmailCount() {
+export async function increaseQuestionEmailCount(count) {
     const date = getKSTDateString();
 
     // 트랜잭션 시작
@@ -39,7 +39,7 @@ export async function increaseQuestionEmailCount() {
 
         await SmtpUsage.findOneAndUpdate(
             { date },
-            { $inc: { questionEmailCount: 1 } }, // 필드명 수정 (questionEmailCountEmailCount → questionEmailCount)
+            { $inc: { questionEmailCount: count } },
             { upsert: true, new: true, session }
         );
 
