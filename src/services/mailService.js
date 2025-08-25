@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import { Question } from "../models/questions.js";
 import { UserAuth } from "../models/userAuth.js";
 import { createLogger } from "../utils/logger.js";
-import { increaseQuestionEmailCount, increaseWelcomeEmailCount } from "./smtpUsageService.js";
+import { increaseWelcomeEmailCount } from "./smtpUsageService.js";
 
 dotenv.config();
 
@@ -21,6 +21,8 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
+    pool: true,
+    maxConnections: 5
 });
 
 // 사용자 이메일로부터 토큰을 조회하는 함수
@@ -85,9 +87,6 @@ export async function sendQuestionEmail({ to }) {
         text: '오늘도 화이팅!',
         html
     });
-
-    // 데이터베이스에 질문 이메일 전송 기록 추가
-    await increaseQuestionEmailCount();
 }
 
 /**

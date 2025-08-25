@@ -47,6 +47,7 @@ const userSchema = new mongoose.Schema({
 
 // 인덱스 추가
 userSchema.index({ subscriptionStatus: 1 });
+userSchema.index({ 'streak.current': 1, 'streak.lastSolvedDate': 1 });
 
 // 사용자의 모든 활동을 조회하는 가상 필드
 userSchema.virtual('activities', {

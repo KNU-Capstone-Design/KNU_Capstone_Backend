@@ -5,6 +5,7 @@ import moment from 'moment-timezone'
 import { getSubscribedUsers } from '../services/subscribeService.js';
 import { sendQuestionEmail } from '../services/mailService.js';
 import logger from '../utils/logger.js';
+import { increaseQuestionEmailCount } from "../services/smtpUsageService.js";
 
 // 매일 9시마다 실행
 cron.schedule('0 0 9 * * *', async () => {
@@ -13,20 +14,29 @@ cron.schedule('0 0 9 * * *', async () => {
         logger.info('매일 아침 9시 이메일 전송 시작', { time: koreaTime });
         
         const users = await getSubscribedUsers(); // 이메일 보낼 대상
+        let successCount = 0; // 이메일 발송량
         
         // 병렬로 이메일 전송
-        await Promise.all(
+        const results = await Promise.allSettled(
             users.map(user => 
                 sendQuestionEmail({ to: user.email })
-                .catch(error => {
-                    logger.error('개별 이메일 전송 실패', {
-                        email: user.email,
-                        error: error.stack || error.message
-                    });
-                    return null; // 개별 이메일 실패해도 전체 프로세스는 계속 진행
-                })
             )
         );
+
+        results.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+                successCount++;
+            } else {
+                logger.error('개별 이메일 전송 실패', {
+                    email: users[index].email,
+                    error: result.reason?.stack || result.reason?.message
+                });
+            }
+        });
+
+        if (successCount > 0) {
+            await increaseQuestionEmailCount(successCount);
+        }
 
     } catch (error) {
         logger.error('이메일 전송 크론 작업 중 오류 발생', {

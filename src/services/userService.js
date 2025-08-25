@@ -111,11 +111,6 @@ export async function updateUserStreak(userId, session) {
             user.streak.current += 1;
             user.streak.lastSolvedDate = today;
         }
-        // 그 외 (이틀 이상 지남) - streak 리셋
-        else {
-            user.streak.current = 1;
-            user.streak.lastSolvedDate = today;
-        }
 
         // DB 업데이트
         user.$session(session);
