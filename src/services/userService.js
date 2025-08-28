@@ -90,7 +90,7 @@ export async function updateUserStreak(userId, session) {
 
         // streak 로직 구현
         // 첫 풀이인 경우
-        if (!user.streak || !user.streak.lastSolvedDate) {
+        if (!user.streak || !user.streak.lastSolvedDate || (user.streak.lastSolvedDate != yesterday && user.streak.lastSolvedDate != today)) {
             user.streak = {
                 current: 1,
                 lastSolvedDate: today
