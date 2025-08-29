@@ -1,13 +1,17 @@
 import * as subscribeService from '../services/subscribeService.js';
 import { createLogger } from "../utils/logger.js";
+import { validateEmail } from "../services/emailValidationService.js";
 
 // 로거 생성
-const logger = createLogger('subscribeController')
+const logger = createLogger('subscribeController');
 
 // 회원 가입 컨트롤러
 export const subscribeUser = async (req, res) => {
     try {
         const { email, categories }  = req.body;
+
+        await validateEmail(email);
+
         const result = await subscribeService.subscribe(email, categories);
 
         return res.status(200).json({
@@ -16,14 +20,20 @@ export const subscribeUser = async (req, res) => {
         });
 
     } catch (error) {
+
+        if (error.message === 'INVALID_EMAIL_FORMAT' || error.message === 'NONEXISTENT_EMAIL') {
+            return res.status(400).json({ error: '유효하지 않은 이메일 주소입니다.' });
+        }
+
         if (error.message === 'ALREADY_SUBSCRIBED') {
             logger.error('[Subscribe]이미 구독중인 이메일', {
                 error: error.message,
                 stack: error.stack,
                 info: req.body
-            })
+            });
             return res.status(409).json({ error: '이미 구독중인 이메일입니다.' });
         }
+
         logger.error('Error', {
             error: error.message,
             stack: error.stack,

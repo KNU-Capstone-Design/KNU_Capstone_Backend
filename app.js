@@ -5,7 +5,7 @@ import connectDB from './src/config/mongoose.js';
 import { setupMiddleware } from './src/middlewares/appMiddleware.js';
 import './src/cron/emailCron.js';
 import './src/cron/recordCron.js';
-import './src/cron/streakResetCron.js'
+import './src/cron/streakResetCron.js';
 
 // 라우터 임포트
 import subscribeRoutes from './src/routes/subscribeRoutes.js';
