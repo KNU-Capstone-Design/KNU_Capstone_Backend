@@ -90,7 +90,7 @@ export async function updateUserStreak(userId, session) {
 
         // streak 로직 구현
         // 첫 풀이인 경우
-        if (!user.streak || !user.streak.lastSolvedDate || (user.streak.lastSolvedDate != yesterday && user.streak.lastSolvedDate != today)) {
+        if (!user.streak || !user.streak.lastSolvedDate) {
             user.streak = {
                 current: 1,
                 lastSolvedDate: today
@@ -109,6 +109,10 @@ export async function updateUserStreak(userId, session) {
         // 어제 풀었으면 streak 증가
         else if (lastSolvedDate === yesterday) {
             user.streak.current += 1;
+            user.streak.lastSolvedDate = today;
+        }
+        else {
+            user.streak.current = 1;
             user.streak.lastSolvedDate = today;
         }
 

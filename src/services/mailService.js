@@ -52,7 +52,7 @@ async function sendEmail({ to, subject, html, text }) {
             email: to
         });
     } catch (error) {
-        console.error(`메일 전송 실패`, {
+        logger.error(`메일 전송 실패`, {
             error: error.message,
             stack: error.stack,
             email: to

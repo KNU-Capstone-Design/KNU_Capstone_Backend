@@ -4,7 +4,7 @@ import { generateToken } from "./authService.js";
 import { createLogger } from "../utils/logger.js";
 
 // 로거 생성
-const logger = createLogger('subscribeService')
+const logger = createLogger('subscribeService');
 
 /**
  DB에 이메일 등록하는 비즈니스 로직
