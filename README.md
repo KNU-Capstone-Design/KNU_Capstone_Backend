@@ -25,6 +25,9 @@ CS, 백엔드, 프론트엔드, 모바일(Android/iOS) 등 다양한 분야의 �
 ## 배포 주소
 - https://myundo.dev
 
+## API 명세서
+- https://knu-capstone-design.github.io/KNU_Capstone_Backend/
+
 ## 전체 프로젝트 구성도
 
 ![img](./assets/프로젝트%20구성도.png)
