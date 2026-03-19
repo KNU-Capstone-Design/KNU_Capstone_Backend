@@ -13,7 +13,7 @@ export async function getFeedbackFromGroq(userQuestion, userAnswer) {
         const response = await axios.post(
             'https://api.groq.com/openai/v1/chat/completions',
             {
-                model: 'meta-llama/llama-4-maverick-17b-128e-instruct',
+                model: process.env.AI_MODEL,
                 temperature: 0,
                 max_tokens: 1024,
                 top_p: 0.8,
@@ -73,7 +73,7 @@ export async function getAnswerFromGroq(userQuestion) {
         const response = await axios.post(
             'https://api.groq.com/openai/v1/chat/completions',
             {
-                model: 'meta-llama/llama-4-maverick-17b-128e-instruct',
+                model: process.env.AI_MODEL,
                 temperature: 0,
                 max_tokens: 700,
                 top_p: 0.8,
