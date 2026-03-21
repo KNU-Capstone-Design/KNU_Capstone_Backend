@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { getAnswerFromGroq, getFeedbackFromGroq } from "./aiService.js";
 import { Question } from "../models/questions.js";
-import { parseFeedback } from "../utils/parseToJSON.js";
+import { parseFeedback, parseToJSON } from "../utils/parseToJSON.js";
 import Answer from "../models/answer.js";
 import { UserActivity } from "../models/userActivity.js";
 import User from "../models/users.js";
@@ -133,7 +133,12 @@ export async function returnAnswer(email, questionId) {
             question: questionId,
             revealedAnswer: true
         }).lean();
-        if (answerDoc) return answerDoc.aiAnswer;
+        if (answerDoc) {
+            // 구모델(평문)과 신모델(JSON 문자열) 모두 호환 처리
+            const parsed = parseToJSON(answerDoc.aiAnswer, null);
+            if (parsed && typeof parsed === 'object') return parsed;
+            return { answer: answerDoc.aiAnswer };
+        }
 
         // API 사용량 제한 확인
         const canUseApi = await checkDailyApiUsageLimit(email, date);
@@ -166,7 +171,7 @@ export async function returnAnswer(email, questionId) {
         // API 사용량 기록
         await recordApiUsage(email, date);
 
-        // DB에 저장 (트랜잭션 포함)
+        // DB에는 원본 문자열 저장 (재조회 시 호환성 처리됨)
         saveFeedbackToDatabase(
             userId, questionId, "", { aiAnswer: aiText }
         ).catch(error => logger.error('AI 정답 저장 실패:', {
@@ -175,7 +180,11 @@ export async function returnAnswer(email, questionId) {
             questionId: questionId,
             email: email
         }));
-        return aiText;
+
+        // 구모델(평문)과 신모델(JSON 문자열) 모두 호환 처리 후 반환
+        const parsed = parseToJSON(aiText, null);
+        if (parsed && typeof parsed === 'object') return parsed;
+        return { answer: aiText };
     } catch (error) {
         logger.error('AI 정답 생성 및 처리 중 오류:', {
             error: error.message,
