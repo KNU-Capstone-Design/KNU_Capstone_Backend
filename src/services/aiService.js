@@ -75,7 +75,7 @@ export async function getAnswerFromGroq(userQuestion) {
             {
                 model: process.env.AI_MODEL,
                 temperature: 0,
-                max_tokens: 700,
+                max_tokens: 1500,
                 top_p: 0.8,
                 messages: [
                     {
