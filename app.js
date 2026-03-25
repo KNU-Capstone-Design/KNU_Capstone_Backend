@@ -6,6 +6,7 @@ import { setupMiddleware } from './src/middlewares/appMiddleware.js';
 import './src/cron/emailCron.js';
 import './src/cron/recordCron.js';
 import './src/cron/streakResetCron.js';
+import { connectRedis } from "./src/config/redis.js";
 
 // 라우터 임포트
 import subscribeRoutes from './src/routes/subscribeRoutes.js';
@@ -33,6 +34,7 @@ const start = async () => {
 
   // DB 연결
   connectDB();
+  connectRedis()
 
   // AdminJS 설정
   const admin = setupAdminJS();
@@ -48,7 +50,18 @@ const start = async () => {
   app.use(cookieParser());
 
   // 모든 API 요청에 rate-limit 적용
-  app.use('/api', apiLimiter);
+  // 로컬 벤치/개발 편의를 위해 개발환경에서는 localhost 요청만 예외 처리
+  app.use('/api', (req, res, next) => {
+    const isDev = process.env.NODE_ENV !== 'production';
+    const ip = req.ip;
+    const isLocalhost = ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
+
+    if (isDev && isLocalhost) {
+      return next();
+    }
+
+    return apiLimiter(req, res, next);
+  });
 
   // 기본 라우트
   app.get('/', (req, res) => {
