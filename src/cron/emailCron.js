@@ -7,26 +7,25 @@ import { sendQuestionEmail } from '../services/mailService.js';
 import logger from '../utils/logger.js';
 import { increaseQuestionEmailCount } from "../services/smtpUsageService.js";
 
-// 매일 9시마다 실행
-cron.schedule('0 0 9 * * *', async () => {
+export async function runDailyQuestionEmailJob() {
     try {
         const koreaTime = moment().tz("Asia/Seoul").format("YYYY-MM-DD HH:mm:ss");
         logger.info('매일 아침 9시 이메일 전송 시작', { time: koreaTime });
-        
+
         const users = await getSubscribedUsers(); // 이메일 보낼 대상
         let successCount = 0; // 이메일 발송량
-        
+
         // 병렬로 이메일 전송
         const results = await Promise.allSettled(
-            users.map(user => 
+            users.map(user =>
                 sendQuestionEmail({ to: user.email })
             )
         );
 
         results.forEach((result, index) => {
-            if (result.status === 'fulfilled') {
+            if (result.status === 'fulfilled' && result.value) {
                 successCount++;
-            } else {
+            } else if (result.status === 'rejected') {
                 logger.error('개별 이메일 전송 실패', {
                     email: users[index].email,
                     error: result.reason?.stack || result.reason?.message
@@ -43,6 +42,9 @@ cron.schedule('0 0 9 * * *', async () => {
             error: error.stack || error.message
         });
     }
-}, {
+}
+
+// 매일 9시마다 실행
+cron.schedule('0 0 9 * * *', runDailyQuestionEmailJob, {
     timezone: "Asia/Seoul"
 });
