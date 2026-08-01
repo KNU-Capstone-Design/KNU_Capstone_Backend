@@ -12,9 +12,36 @@ on:
       - 'package-lock.json'
       - 'app.js'
       - '.github/workflows/deploy.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/deploy.yml'
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
   check-scope:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       is_swagger: ${{ steps.check.outputs.swagger }}
@@ -50,7 +77,7 @@ jobs:
 
   deploy-swagger:
     needs: check-scope
-    if: needs.check-scope.outputs.is_swagger == 'true'
+    if: github.event_name == 'push' && needs.check-scope.outputs.is_swagger == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -78,8 +105,8 @@ jobs:
       
   # 코드 배포시 도커 컨테이너 재시작( ~/docker-compose.yml)
   deploy-code:
-    needs: [check-scope, deploy-swagger]
-    if: always()
+    needs: [test, check-scope, deploy-swagger]
+    if: always() && github.event_name == 'push' && needs.test.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

@@ -51,12 +51,14 @@ async function sendEmail({ to, subject, html, text }) {
         logger.info(`메일 전송 완료`, {
             email: to
         });
+        return true;
     } catch (error) {
         logger.error(`메일 전송 실패`, {
             error: error.message,
             stack: error.stack,
             email: to
         });
+        return false;
     }
 }
 
@@ -68,6 +70,11 @@ async function sendEmail({ to, subject, html, text }) {
 export async function sendQuestionEmail({ to }) {
     // 질문 ID 선택
     const questionId = await selectQuestion(to);
+
+    if (!questionId) {
+        logger.info('발송할 질문 없음 - 메일 전송 스킵', { email: to });
+        return false;
+    }
 
     // 토큰 조회 및 URL 생성
     const token = await getTokenByEmail(to);
@@ -81,7 +88,7 @@ export async function sendQuestionEmail({ to }) {
     const html = questionEmail({ answerUrl, questionText, category, profileUrl });
 
     // 메일 전송
-    await sendEmail({
+    return sendEmail({
         to,
         subject: '오늘의 질문이 도착했습니다!',
         text: '오늘도 화이팅!',
