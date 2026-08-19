@@ -72,9 +72,18 @@ export async function returnFeedBack(email, questionId, userAnswer) {
         const text = userQuestion.text;
 
         // AI 피드백 요청 및 JSON 파싱
-        const result = parseFeedback(
-            await getFeedbackFromGroq(text, userAnswer)
-        );
+        const rawFeedback = await getFeedbackFromGroq(text, userAnswer);
+        const result = parseFeedback(rawFeedback);
+
+        // 모델이 형식을 벗어나 파싱이 비는 경우를 즉시 알아챌 수 있도록 원문을 남긴다
+        if (!result.strengths.length && !result.improvements.length && !result.wrongPoints.length) {
+            logger.warn('피드백 파싱 결과가 비어 있음', {
+                email: email,
+                questionId: questionId,
+                score: result.score,
+                rawFeedback: (rawFeedback ?? '').slice(0, 500)
+            });
+        }
         /*
             result 예시:
             {
