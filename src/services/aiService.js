@@ -36,12 +36,18 @@ export async function getFeedbackFromGroq(userQuestion, userAnswer) {
 - 20점: 질문의 의도조차 파악하지 못한 답변.
 - 0점: 답변을 하지 못함.
 
-[출력 형식은 아래 예시를 따를 것]
+[출력 형식 - 반드시 아래 형식 그대로 출력할 것]
+- 마크다운 서식(별표, 샵 기호 등)을 절대 사용하지 마라.
+- 아래 네 개의 항목명을 콜론(:)까지 포함해 그대로 사용하고, 다른 항목을 추가하지 마라.
+- 각 항목의 내용은 "- "로 시작하는 줄로 작성하라.
 
-점수: NN점  
-잘한 점: ... (최대 5줄)  
-부족한 점: ... (최대 5줄)  
-틀린 점: ... (최대 5줄)
+점수: NN점
+잘한 점:
+- ... (최대 5줄)
+부족한 점:
+- ... (최대 5줄)
+틀린 점:
+- ... (최대 5줄)
                     `
                     },
                     {
@@ -64,6 +70,7 @@ export async function getFeedbackFromGroq(userQuestion, userAnswer) {
             stack: error.stack,
             userQuestion: userQuestion
         })
+        throw error;
     }
 }
 
@@ -117,5 +124,6 @@ export async function getAnswerFromGroq(userQuestion) {
             stack: error.stack,
             userQuestion: userQuestion
         })
+        throw error;
     }
 }
